@@ -39,7 +39,6 @@ public class ReadSms extends AsyncTask<Void, Void, List<Sms>> {
     private List<Sms> readMatchingSms() {
         List<Sms> sms = new ArrayList();
         String[] projection = new String[]{"_id", "address", "body", "date"};
-//        String where = "address='8220812950'";
         Cursor cur = contentResolver.query(Uri.parse("content://sms/"), projection, null, null, "date desc");
         if (cur.moveToFirst()) {
             int index_Address = cur.getColumnIndex("address");
@@ -54,9 +53,7 @@ public class ReadSms extends AsyncTask<Void, Void, List<Sms>> {
                 cur = null;
             }
         }
-//        return sms;
         return this.filter(sms, this.getAccountNames());
-
     }
 
     private List<Sms> filter(List<Sms> allSms, List<String> accountNames) {
@@ -71,10 +68,5 @@ public class ReadSms extends AsyncTask<Void, Void, List<Sms>> {
 
     private List<String> getAccountNames() {
         return appDatabase.accountDao().getAccountNames();
-//        List<String> nameWithQuotes = new ArrayList<>();
-//        for(String name : accountNames) {
-//            nameWithQuotes.add("'" + name + "'");
-//        }
-//        return TextUtils.join(",", nameWithQuotes);
     }
 }

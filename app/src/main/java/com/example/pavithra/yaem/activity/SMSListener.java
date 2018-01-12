@@ -6,7 +6,6 @@ import android.view.View;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.R;
-import com.example.pavithra.yaem.model.tasks.db.TestSetUp;
 import com.example.pavithra.yaem.model.tasks.sms.ReadSms;
 
 

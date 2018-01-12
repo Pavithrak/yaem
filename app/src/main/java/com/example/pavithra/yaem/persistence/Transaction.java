@@ -13,14 +13,20 @@ public class Transaction {
     private String info;
     private Double debit;
     private Double credit;
-//    private Date transactionDate;
+    private Integer month;
+    private Integer year;
+    private Integer date;
 
-    public Transaction(Account account, Double debit, Double credit, String info) {
+    public Transaction(Long id, Account account, String info, Double debit, Double credit,
+                       Integer month, Integer year, Integer date) {
+        this.id = id;
         this.account = account;
+        this.info = info;
         this.debit = debit;
         this.credit = credit;
-        this.info = info;
-//        this.transactionDate = transactionDate;
+        this.month = month;
+        this.year = year;
+        this.date = date;
     }
 
     public Long getId() {
@@ -43,9 +49,17 @@ public class Transaction {
         return credit;
     }
 
-//    public Date getTransactionDate() {
-//        return transactionDate;
-//    }
+    public Integer getMonth() {
+        return month;
+    }
+
+    public Integer getYear() {
+        return year;
+    }
+
+    public Integer getDate() {
+        return date;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -67,7 +81,19 @@ public class Transaction {
         this.credit = credit;
     }
 
-//    public void setTransactionDate(Date transactionDate) {
-//        this.transactionDate = transactionDate;
-//    }
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public void setDate(Integer date) {
+        this.date = date;
+    }
 }

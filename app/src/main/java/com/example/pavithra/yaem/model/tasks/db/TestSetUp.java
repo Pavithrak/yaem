@@ -19,7 +19,9 @@ public class TestSetUp extends AsyncTask<Void, Void, Void> {
 
     private Void addData() {
         Account account = new Account("AM-FROMSC");
+        Account account1 = new Account("AD-FROMSC");
         appDatabase.accountDao().add(account);
+        appDatabase.accountDao().add(account1);
         return null;
     }
 }
