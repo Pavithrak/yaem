@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">yaem</string>
+    <string name="title_activity_add_account">AddAccount</string>
+</resources>
