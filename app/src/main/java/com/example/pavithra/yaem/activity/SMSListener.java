@@ -1,19 +1,14 @@
 package com.example.pavithra.yaem.activity;
 
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.R;
-import com.example.pavithra.yaem.model.Sms;
 import com.example.pavithra.yaem.model.tasks.db.TestSetUp;
 import com.example.pavithra.yaem.model.tasks.sms.ReadSms;
-import com.example.pavithra.yaem.service.AsyncExecutor;
 
-import java.util.List;
 
 public class SMSListener extends AppCompatActivity {
 
@@ -21,8 +16,8 @@ public class SMSListener extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smslistener);
-        AsyncExecutor<List<Sms>> asyncExecutor = new AsyncExecutor<>(AppDatabase.getInstance(getApplicationContext()));
-        asyncExecutor.execute(new ReadSms(getContentResolver()));
+        ReadSms readSmsTask = new ReadSms(AppDatabase.getInstance(getApplicationContext()), getContentResolver());
+        readSmsTask.execute();
     }
 
     public void startListening(View view) {

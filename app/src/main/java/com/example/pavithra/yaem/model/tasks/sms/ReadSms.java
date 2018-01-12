@@ -3,29 +3,44 @@ package com.example.pavithra.yaem.model.tasks.sms;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.text.TextUtils;
+import android.os.AsyncTask;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.model.Sms;
-import com.example.pavithra.yaem.model.tasks.AsynchronousTask;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ReadSms implements AsynchronousTask<List<Sms>> {
+public class ReadSms extends AsyncTask<Void, Void, List<Sms>> {
     ContentResolver contentResolver;
+    AppDatabase appDatabase;
 
-    public ReadSms(ContentResolver contentResolver) {
+    public ReadSms(AppDatabase appDatabase, ContentResolver contentResolver) {
+        this.appDatabase = appDatabase;
         this.contentResolver = contentResolver;
     }
+
     @Override
-    public List<Sms> execute(AppDatabase appDatabase) {
+    protected List<Sms> doInBackground(Void... voids) {
+        return this.readMatchingSms();
+    }
+
+
+    @Override
+    protected void onPostExecute(List<Sms> filteredSms) {
+        super.onPostExecute(filteredSms);
+        System.out.println("The size is " + filteredSms.size());
+        for(Sms sms : filteredSms) {
+            System.out.print("The sms is " + sms);
+        }
+    }
+
+    private List<Sms> readMatchingSms() {
         List<Sms> sms = new ArrayList();
         String[] projection = new String[]{"_id", "address", "body", "date"};
-        String where = "address in ("+this.getAccountNames(appDatabase)+")";
+//        String where = "address='8220812950'";
         Cursor cur = contentResolver.query(Uri.parse("content://sms/"), projection, null, null, "date desc");
-        System.out.print("The length is " + cur.getCount());
         if (cur.moveToFirst()) {
             int index_Address = cur.getColumnIndex("address");
             int index_Body = cur.getColumnIndex("body");
@@ -39,15 +54,27 @@ public class ReadSms implements AsynchronousTask<List<Sms>> {
                 cur = null;
             }
         }
-        return sms;
+//        return sms;
+        return this.filter(sms, this.getAccountNames());
+
     }
 
-    private String getAccountNames(AppDatabase appDatabase) {
-        List<String> accountNames = appDatabase.accountDao().getAccountNames();
-        List<String> nameWithQuotes = new ArrayList<>();
-        for(String name : accountNames) {
-            nameWithQuotes.add("'" + name + "'");
+    private List<Sms> filter(List<Sms> allSms, List<String> accountNames) {
+        List<Sms> filteredSms = new ArrayList<>();
+        for(Sms sms : allSms) {
+            if(accountNames.contains(sms.getAddress())) {
+                filteredSms.add(sms);
+            }
         }
-        return TextUtils.join(",", nameWithQuotes);
+        return filteredSms;
+    }
+
+    private List<String> getAccountNames() {
+        return appDatabase.accountDao().getAccountNames();
+//        List<String> nameWithQuotes = new ArrayList<>();
+//        for(String name : accountNames) {
+//            nameWithQuotes.add("'" + name + "'");
+//        }
+//        return TextUtils.join(",", nameWithQuotes);
     }
 }
