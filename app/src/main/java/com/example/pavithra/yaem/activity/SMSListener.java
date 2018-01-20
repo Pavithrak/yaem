@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.R;
+import com.example.pavithra.yaem.model.tasks.db.TestSetUp;
 import com.example.pavithra.yaem.model.tasks.sms.SyncExistingSms;
 
 
@@ -15,6 +16,9 @@ public class SMSListener extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_smslistener);
+//        TestSetUp testSetUp = new TestSetUp(AppDatabase.getInstance(getApplicationContext()));
+//        testSetUp.execute();
+
         SyncExistingSms syncExistingSmsTask = new SyncExistingSms(AppDatabase.getInstance(getApplicationContext()), getContentResolver());
         syncExistingSmsTask.execute();
     }

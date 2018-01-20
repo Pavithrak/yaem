@@ -15,11 +15,11 @@ public class Sms {
     private String body;
     private Date date;
     private final List<Pattern> withdrawalRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("debited.*(INR\\s|Rs.)(\\d[^\\s]*)"));
+        add(Pattern.compile("debited.*by (INR\\s|Rs.)(\\d[^\\sA-Za-z]*)"));
         add(Pattern.compile("of (INR\\s|Rs.)(\\d[^\\s]*).*Credit Card"));
     }};
     private final List<Pattern> creditRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("credited.*(INR\\s|Rs.)(\\d[^\\s]*)"));
+        add(Pattern.compile("credited.*by (INR\\s|Rs.)(\\d[^\\sA-Za-z]*)"));
     }};
     private final List<Pattern> dateRegex = new ArrayList<Pattern>() {{
         add(Pattern.compile("on.([^\\s|.]*)"));
@@ -74,12 +74,19 @@ public class Sms {
         return calendar.get(Calendar.DATE);
     }
 
+    public boolean isATransactionSms() {
+        return this.getWithdrawlAmount() != null || this.getCreditedAmount() != null;
+    }
+
     @Override
     public String toString() {
         return "Sms{" +
                 "address='" + address + '\'' +
                 ", body='" + body + '\'' +
-                ", date=" + date +
+                ", date=" + date + '\'' +
+                ", getTransactionDate=" + this.getTransactionDate() + '\'' +
+                ", getCredit =" + this.getCreditedAmount() + '\'' +
+                ", getDebit =" + this.getWithdrawlAmount() + '\'' +
                 '}';
     }
 
@@ -102,11 +109,21 @@ public class Sms {
             Matcher matcher = pattern.matcher(this.body);
             if (matcher.find()) {
                 String numberString = matcher.group(2);
-                value = convertStringToDouble(numberString);
+                value = convertStringToDouble(cleanse(numberString));
                 break;
             }
         }
         return value;
+    }
+
+    private String cleanse(String value) {
+        String trimmedValue = value.trim();
+        return removeTrailingDot(trimmedValue);
+    }
+
+    private String removeTrailingDot(String trimmedValue) {
+        Matcher matcher = Pattern.compile("(.*)\\.$").matcher(trimmedValue);
+        return matcher.find() ? matcher.group(1) : trimmedValue;
     }
 
     private Date convertStringToDate(String date) {

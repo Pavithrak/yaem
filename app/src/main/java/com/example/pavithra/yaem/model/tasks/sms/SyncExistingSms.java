@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SyncExistingSms extends AsyncTask<Void, Void, Void> {
+public class SyncExistingSms extends AsyncTask<Void, Void, List> {
     private ContentResolver contentResolver;
     private AppDatabase appDatabase;
     private List<Account> accounts;
@@ -25,12 +25,23 @@ public class SyncExistingSms extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected List<Sms> doInBackground(Void... voids) {
         this.accounts = appDatabase.accountDao().getAccounts();
         List<Sms> sms = this.readMatchingSms();
         List<TransactionAlert> transactionAlerts = mapToTransaction(sms);
         saveTransactionAlerts(transactionAlerts);
-        return null;
+        return sms;
+    }
+
+    @Override
+    protected void onPostExecute(List list) {
+        super.onPostExecute(list);
+        for(Object obj : list) {
+            Sms sms = (Sms) obj;
+            if (!sms.isATransactionSms()) {
+                System.out.println("This invalid sms is " + sms);
+            }
+        }
     }
 
     void saveTransactionAlerts(List<TransactionAlert> transactionAlerts) {
@@ -41,9 +52,11 @@ public class SyncExistingSms extends AsyncTask<Void, Void, Void> {
         List<TransactionAlert> transactionAlerts = new ArrayList<>();
         for(Sms sms : filteredSms) {
             Long accountId = this.getAccountId(sms.getAddress());
-            transactionAlerts.add(new TransactionAlert(accountId, sms.getBody(), sms.getWithdrawlAmount(),
-                    sms.getCreditedAmount(), sms.getTransactionMonth(),
-                    sms.getTransactionYear(), sms.getTransactionDay()));
+            if(sms.isATransactionSms()) {
+                transactionAlerts.add(new TransactionAlert(accountId, sms.getBody(), sms.getWithdrawlAmount(),
+                        sms.getCreditedAmount(), sms.getTransactionMonth(),
+                        sms.getTransactionYear(), sms.getTransactionDay()));
+            }
         }
         return transactionAlerts;
     }

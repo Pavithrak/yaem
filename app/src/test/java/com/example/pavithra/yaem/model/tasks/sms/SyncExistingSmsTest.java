@@ -83,17 +83,19 @@ public class SyncExistingSmsTest {
                 new Account(2l, "AD-SOMEOTHERBANK", null)));
         SyncExistingSms spy = spy(syncExistingSms);
         ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        Sms sms = new Sms("AD-SOMEBANK", "debited Rs 90 on 19-Dec-2017", new Date());
-        Sms sms1 = new Sms("AD-SOMEOTHERBANK", "credited INR 190 on 20-Dec-2017", new Date());
+        Sms sms = new Sms("AD-SOMEBANK", "debited by Rs.90 on 19-Dec-2017", new Date());
+        Sms sms1 = new Sms("AD-SOMEOTHERBANK", "credited by INR 190 on 20-Dec-2017", new Date());
+        Sms sms2 = new Sms("AD-SOMEOTHERBANK", "Some random sms", new Date());
         TransactionDao mockTransactionDao = mock(TransactionDao.class);
         when(appDatabase.transactionDao()).thenReturn(mockTransactionDao);
-        doReturn(asList(sms, sms1)).when(spy).readMatchingSms();
+        doReturn(asList(sms, sms1, sms2)).when(spy).readMatchingSms();
 
         spy.doInBackground();
 
         verify(mockTransactionDao).add(captor.capture());
 
         List transactionAlerts = captor.getValue();
+        assertEquals(2, transactionAlerts.size());
         TransactionAlert transactionAlert = (TransactionAlert) transactionAlerts.get(0);
         assertEquals(1l, transactionAlert.getAccountId().longValue());
         assertEquals(new Double(90), transactionAlert.getDebit());
