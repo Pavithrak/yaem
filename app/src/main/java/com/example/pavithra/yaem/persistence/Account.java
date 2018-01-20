@@ -12,7 +12,8 @@ public class Account {
     private String name;
     private Long number;
 
-    public Account(String name, Long number) {
+    public Account(Long id, String name, Long number) {
+        this.id = id;
         this.name = name;
         this.number = number;
     }

@@ -2,14 +2,20 @@ package com.example.pavithra.yaem.persistence;
 
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 @Entity
-public class Transaction {
+@Builder
+@NoArgsConstructor
+public class TransactionAlert {
     @PrimaryKey
     private Long id;
-    @Embedded(prefix = "account")
-    private Account account;
+    private Long accountId;
     private String info;
     private Double debit;
     private Double credit;
@@ -17,10 +23,22 @@ public class Transaction {
     private Integer year;
     private Integer date;
 
-    public Transaction(Long id, Account account, String info, Double debit, Double credit,
+    public TransactionAlert(Long id, Long accountId, String info, Double debit, Double credit,
                        Integer month, Integer year, Integer date) {
         this.id = id;
-        this.account = account;
+        this.accountId = accountId;
+        this.info = info;
+        this.debit = debit;
+        this.credit = credit;
+        this.month = month;
+        this.year = year;
+        this.date = date;
+    }
+
+    @Ignore
+    public TransactionAlert(Long account, String info, Double debit, Double credit,
+                            Integer month, Integer year, Integer date) {
+        this.accountId = account;
         this.info = info;
         this.debit = debit;
         this.credit = credit;
@@ -33,8 +51,8 @@ public class Transaction {
         return id;
     }
 
-    public Account getAccount() {
-        return account;
+    public Long getAccountId() {
+        return accountId;
     }
 
     public String getInfo() {
@@ -65,8 +83,8 @@ public class Transaction {
         this.id = id;
     }
 
-    public void setWalletId(Account account) {
-        this.account = account;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
     public void setInfo(String info) {
@@ -79,10 +97,6 @@ public class Transaction {
 
     public void setCredit(Double credit) {
         this.credit = credit;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
     }
 
     public void setMonth(Integer month) {
