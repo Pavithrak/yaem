@@ -62,17 +62,16 @@ public class SyncExistingSmsTest {
         when(contentResolver.query(any(Uri.class), eq(projection), anyString(), any(String[].class), eq("date desc"))).thenReturn(mockCursor);
         when(appDatabase.accountDao()).thenReturn(mockAccountDao);
         when(mockAccountDao.getAccounts()).thenReturn(asList(new Account("address1")));
-        doReturn(transactionAlerts).when(spy).mapToTransaction(anyList());
-        doNothing().when(spy).saveTransactionAlerts(anyList());
 
-        spy.doInBackground();
+        List<Sms> allSms = spy.readExistingSms();
 
-        verify(spy).mapToTransaction(captor.capture());
-        verify(spy).saveTransactionAlerts(transactionAlerts);
-        List allSms = captor.getValue();
-        Sms sms = (Sms) allSms.get(0);
-        assertEquals(1, allSms.size());
+        Sms sms = allSms.get(0);
+        assertEquals(2, allSms.size());
         assertEquals("address1", sms.getAddress());
+        assertEquals("body1", sms.getBody());
+        sms = allSms.get(1);
+        assertEquals("address2", sms.getAddress());
+        assertEquals("body2", sms.getBody());
     }
 
     @Test
@@ -86,9 +85,10 @@ public class SyncExistingSmsTest {
         Sms sms = new Sms("AD-SOMEBANK", "debited by Rs.90 on 19-Dec-2017", new Date());
         Sms sms1 = new Sms("AD-SOMEOTHERBANK", "credited by INR 190 on 20-Dec-2017", new Date());
         Sms sms2 = new Sms("AD-SOMEOTHERBANK", "Some random sms", new Date());
+        Sms sms3 = new Sms("AD-SOMERANDOMBANK", "credited by INR 190 on 20-Dec-2017", new Date());
         TransactionDao mockTransactionDao = mock(TransactionDao.class);
         when(appDatabase.transactionDao()).thenReturn(mockTransactionDao);
-        doReturn(asList(sms, sms1, sms2)).when(spy).readMatchingSms();
+        doReturn(asList(sms, sms1, sms2, sms3)).when(spy).readExistingSms();
 
         spy.doInBackground();
 

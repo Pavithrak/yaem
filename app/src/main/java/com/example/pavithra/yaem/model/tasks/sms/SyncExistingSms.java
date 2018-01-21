@@ -9,6 +9,7 @@ import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.model.Sms;
 import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
+import com.example.pavithra.yaem.service.SmsService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,8 +28,8 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
     @Override
     protected List<Sms> doInBackground(Void... voids) {
         this.accounts = appDatabase.accountDao().getAccounts();
-        List<Sms> sms = this.readMatchingSms();
-        List<TransactionAlert> transactionAlerts = mapToTransaction(sms);
+        List<Sms> sms = this.readExistingSms();
+        List<TransactionAlert> transactionAlerts = new SmsService(sms, accounts).getFilteredTransactionAlerts();
         saveTransactionAlerts(transactionAlerts);
         return sms;
     }
@@ -48,20 +49,7 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
         appDatabase.transactionDao().add(transactionAlerts);
     }
 
-    List<TransactionAlert> mapToTransaction(List<Sms> filteredSms) {
-        List<TransactionAlert> transactionAlerts = new ArrayList<>();
-        for(Sms sms : filteredSms) {
-            Long accountId = this.getAccountId(sms.getAddress());
-            if(sms.isATransactionSms()) {
-                transactionAlerts.add(new TransactionAlert(accountId, sms.getBody(), sms.getWithdrawlAmount(),
-                        sms.getCreditedAmount(), sms.getTransactionMonth(),
-                        sms.getTransactionYear(), sms.getTransactionDay()));
-            }
-        }
-        return transactionAlerts;
-    }
-
-    List<Sms> readMatchingSms() {
+    List<Sms> readExistingSms() {
         List<Sms> sms = new ArrayList();
         String[] projection = new String[]{"_id", "address", "body", "date"};
         Cursor cur = contentResolver.query(Uri.parse("content://sms/"), projection, null, null, "date desc");
@@ -78,35 +66,6 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
                 cur = null;
             }
         }
-        return this.filter(sms, this.getAccountNames());
-    }
-
-    private List<Sms> filter(List<Sms> allSms, List<String> accountNames) {
-        List<Sms> filteredSms = new ArrayList<>();
-        for(Sms sms : allSms) {
-            if(accountNames.contains(sms.getAddress())) {
-                filteredSms.add(sms);
-            }
-        }
-        return filteredSms;
-    }
-
-    private List<String> getAccountNames() {
-        List<String> accountNames = new ArrayList<>();
-        for(Account account : this.accounts) {
-            accountNames.add(account.getName());
-        }
-        return accountNames;
-    }
-
-    private Long getAccountId(String name) {
-        Long accountId = null;
-        for(Account account : this.accounts) {
-            if (account.getName().equals(name)) {
-                accountId = account.getId();
-                break;
-            }
-        }
-        return accountId;
+        return sms;
     }
 }
