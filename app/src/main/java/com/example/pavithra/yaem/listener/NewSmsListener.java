@@ -15,19 +15,27 @@ import com.example.pavithra.yaem.service.SmsService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SmsListener extends BroadcastReceiver {
+public class NewSmsListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        AppDatabase appDatabase = AppDatabase.getInstance(context);
+        AppDatabase appDatabase = getAppDatabase(context);
         if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
             List<Account> accounts = appDatabase.accountDao().getAccounts();
             List<Sms> smsList = getNewSms(intent);
-            List<TransactionAlert> transactionAlerts = new SmsService(smsList, accounts).getFilteredTransactionAlerts();
+            List<TransactionAlert> transactionAlerts = getSmsService(smsList, accounts).getFilteredTransactionAlerts();
             appDatabase.transactionDao().add(transactionAlerts);
         }
     }
 
-    private List<Sms> getNewSms(Intent intent) {
+   SmsService getSmsService(List<Sms> smsList, List<Account> accounts) {
+        return new SmsService(smsList, accounts);
+    }
+
+    AppDatabase getAppDatabase(Context context) {
+        return AppDatabase.getInstance(context);
+    }
+
+    List<Sms> getNewSms(Intent intent) {
         List<Sms> smsList = new ArrayList<>();
         for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
             String address = smsMessage.getDisplayOriginatingAddress();

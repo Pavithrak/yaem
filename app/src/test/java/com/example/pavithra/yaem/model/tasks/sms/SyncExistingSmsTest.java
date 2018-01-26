@@ -10,6 +10,7 @@ import com.example.pavithra.yaem.dao.TransactionDao;
 import com.example.pavithra.yaem.model.Sms;
 import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
+import com.example.pavithra.yaem.service.SmsService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +47,7 @@ public class SyncExistingSmsTest {
     @Test
     public void shouldReadAndFilterSmsBasedOnPresetAddress() throws Exception {
         SyncExistingSms spy = spy(syncExistingSms);
-        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         String[] projection = new String[]{"_id", "address", "body", "date"};
-        List<TransactionAlert> transactionAlerts = asList(TransactionAlert.builder().build());
         Cursor mockCursor = mock(Cursor.class);
         AccountDao mockAccountDao = mock(AccountDao.class);
         when(mockCursor.moveToFirst()).thenReturn(true);
@@ -75,39 +74,34 @@ public class SyncExistingSmsTest {
     }
 
     @Test
-    public void shouldCreateTransactionOnPostExecute() throws Exception {
+    public void shouldCreateTransaction() throws Exception {
+        SyncExistingSms spy = spy(syncExistingSms);
+
+        List<Account> accounts = asList(new Account(1l, "AD-SOMEBANK", null),
+                new Account(2l, "AD-SOMEOTHERBANK", null));
         AccountDao mockAccountDao = mock(AccountDao.class);
         when(appDatabase.accountDao()).thenReturn(mockAccountDao);
-        when(mockAccountDao.getAccounts()).thenReturn(asList(new Account(1l, "AD-SOMEBANK", null),
-                new Account(2l, "AD-SOMEOTHERBANK", null)));
-        SyncExistingSms spy = spy(syncExistingSms);
-        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+        when(mockAccountDao.getAccounts()).thenReturn(accounts);
+
+        SmsService mockSmsService = mock(SmsService.class);
+        List<TransactionAlert> transactionAlerts = asList(TransactionAlert.builder().build());
+        when(mockSmsService.getFilteredTransactionAlerts()).thenReturn(transactionAlerts);
+
         Sms sms = new Sms("AD-SOMEBANK", "debited by Rs.90 on 19-Dec-2017", new Date());
         Sms sms1 = new Sms("AD-SOMEOTHERBANK", "credited by INR 190 on 20-Dec-2017", new Date());
         Sms sms2 = new Sms("AD-SOMEOTHERBANK", "Some random sms", new Date());
         Sms sms3 = new Sms("AD-SOMERANDOMBANK", "credited by INR 190 on 20-Dec-2017", new Date());
+        List<Sms> allSms = asList(sms, sms1, sms2, sms3);
+        doReturn(mockSmsService).when(spy).getSmsService(allSms, accounts);
+
         TransactionDao mockTransactionDao = mock(TransactionDao.class);
         when(appDatabase.transactionDao()).thenReturn(mockTransactionDao);
-        doReturn(asList(sms, sms1, sms2, sms3)).when(spy).readExistingSms();
+
+        doReturn(allSms).when(spy).readExistingSms();
+        doReturn(mockSmsService).when(spy).getSmsService(allSms, accounts);
 
         spy.doInBackground();
 
-        verify(mockTransactionDao).add(captor.capture());
-
-        List transactionAlerts = captor.getValue();
-        assertEquals(2, transactionAlerts.size());
-        TransactionAlert transactionAlert = (TransactionAlert) transactionAlerts.get(0);
-        assertEquals(1l, transactionAlert.getAccountId().longValue());
-        assertEquals(new Double(90), transactionAlert.getDebit());
-        assertEquals(12, transactionAlert.getMonth().intValue());
-        assertEquals(2017, transactionAlert.getYear().intValue());
-        assertEquals(19, transactionAlert.getDate().intValue());
-
-        transactionAlert = (TransactionAlert) transactionAlerts.get(1);
-        assertEquals(2l, transactionAlert.getAccountId().longValue());
-        assertEquals(new Double(190), transactionAlert.getCredit());
-        assertEquals(12, transactionAlert.getMonth().intValue());
-        assertEquals(2017, transactionAlert.getYear().intValue());
-        assertEquals(20, transactionAlert.getDate().intValue());
+        verify(mockTransactionDao).add(transactionAlerts);
     }
 }

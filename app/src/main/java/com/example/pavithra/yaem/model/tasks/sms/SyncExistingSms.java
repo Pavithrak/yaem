@@ -18,7 +18,6 @@ import java.util.List;
 public class SyncExistingSms extends AsyncTask<Void, Void, List> {
     private ContentResolver contentResolver;
     private AppDatabase appDatabase;
-    private List<Account> accounts;
 
     public SyncExistingSms(AppDatabase appDatabase, ContentResolver contentResolver) {
         this.appDatabase = appDatabase;
@@ -27,9 +26,9 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
 
     @Override
     protected List<Sms> doInBackground(Void... voids) {
-        this.accounts = appDatabase.accountDao().getAccounts();
+        List<Account> accounts = appDatabase.accountDao().getAccounts();
         List<Sms> sms = this.readExistingSms();
-        List<TransactionAlert> transactionAlerts = new SmsService(sms, accounts).getFilteredTransactionAlerts();
+        List<TransactionAlert> transactionAlerts = getSmsService(sms, accounts).getFilteredTransactionAlerts();
         saveTransactionAlerts(transactionAlerts);
         return sms;
     }
@@ -47,6 +46,10 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
 
     void saveTransactionAlerts(List<TransactionAlert> transactionAlerts) {
         appDatabase.transactionDao().add(transactionAlerts);
+    }
+
+    SmsService getSmsService(List<Sms> sms, List<Account> accounts) {
+        return new SmsService(sms, accounts);
     }
 
     List<Sms> readExistingSms() {
