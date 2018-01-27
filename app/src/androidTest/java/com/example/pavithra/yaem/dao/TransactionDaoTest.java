@@ -29,10 +29,6 @@ public class TransactionDaoTest {
         Context context = InstrumentationRegistry.getTargetContext();
         appDatabase = Room.inMemoryDatabaseBuilder(context, AppDatabase.class).build();
         transactionDao = appDatabase.transactionDao();
-    }
-
-    @Test
-    public void shouldGetMonthlyReport() throws Exception {
         TransactionAlert transactionAlert = TransactionAlert.builder().credit(new Double(90)).month(1).year(2017).build();
         TransactionAlert transactionAlert1 = TransactionAlert.builder().credit(new Double(80)).month(1).year(2017).build();
         TransactionAlert transactionAlert4 = TransactionAlert.builder().debit(new Double(190)).month(1).year(2017).build();
@@ -45,6 +41,10 @@ public class TransactionDaoTest {
                 transactionAlert3, transactionAlert4, transactionAlert5, transactionAlert6, transactionAlert7);
         transactionDao.add(transactionAlerts);
 
+    }
+
+    @Test
+    public void shouldGetMonthlyReport() throws Exception {
         List<AggregatedMonthlyReport> aggregatedMonthlyReport = transactionDao.getAggregatedMonthlyReport();
 
         assertEquals(4, aggregatedMonthlyReport.size());
@@ -63,6 +63,45 @@ public class TransactionDaoTest {
         report = findAggregationFor(aggregatedMonthlyReport, 2, 2016);
         assertNull(report.getTotalCredit());
         assertEquals(new Double(150), report.getTotalDebit());
+    }
+
+    @Test
+    public void shouldGetAlertsOfGivenMonthAndYear() throws Exception {
+
+        List<TransactionAlert> transactionAlerts = transactionDao.getTransactionAlerts(1, 2017);
+
+        assertEquals(4, transactionAlerts.size());
+        assertNotNull(findByCredit(transactionAlerts, 90.00, 1, 2017));
+        assertNotNull(findByCredit(transactionAlerts, 80.00, 1, 2017));
+        assertNotNull(findByDebit(transactionAlerts, 190.00, 1, 2017));
+        assertNotNull(findByDebit(transactionAlerts, 170.00, 1, 2017));
+
+    }
+
+    private TransactionAlert findByCredit(List<TransactionAlert> transactionAlerts, Double credit,
+                                          Integer month, Integer year) {
+        TransactionAlert match = null;
+        for(TransactionAlert alert : transactionAlerts) {
+            if(credit.equals(alert.getCredit()) && alert.getDebit() == null &&
+                    month.equals(alert.getMonth()) && year.equals(alert.getYear())) {
+                match =  alert;
+                break;
+            }
+        }
+        return match;
+    }
+
+    private TransactionAlert findByDebit(List<TransactionAlert> transactionAlerts, Double debit,
+                                          Integer month, Integer year) {
+        TransactionAlert match = null;
+        for(TransactionAlert alert : transactionAlerts) {
+            if(debit.equals(alert.getDebit()) && alert.getCredit() == null
+                    && month.equals(alert.getMonth()) && year.equals(alert.getYear())) {
+                match =  alert;
+                break;
+            }
+        }
+        return match;
     }
 
     private AggregatedMonthlyReport findAggregationFor(List<AggregatedMonthlyReport> aggregatedMonthlyReports, Integer month, Integer year) {
