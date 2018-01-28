@@ -78,6 +78,7 @@ public class TransactionDaoTest {
 
     }
 
+
     private TransactionAlert findByCredit(List<TransactionAlert> transactionAlerts, Double credit,
                                           Integer month, Integer year) {
         TransactionAlert match = null;
