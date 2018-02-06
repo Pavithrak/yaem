@@ -1,9 +1,13 @@
 package com.example.pavithra.yaem.service.async;
 
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.model.Sms;
@@ -16,12 +20,12 @@ import java.util.Date;
 import java.util.List;
 
 public class SyncExistingSms extends AsyncTask<Void, Void, List> {
-    private ContentResolver contentResolver;
+    private AppCompatActivity activity;
     private AppDatabase appDatabase;
 
-    public SyncExistingSms(AppDatabase appDatabase, ContentResolver contentResolver) {
+    public SyncExistingSms(AppDatabase appDatabase, AppCompatActivity activity) {
         this.appDatabase = appDatabase;
-        this.contentResolver = contentResolver;
+        this.activity = activity;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
     @Override
     protected void onPostExecute(List list) {
         super.onPostExecute(list);
-        for(Object obj : list) {
+        for (Object obj : list) {
             Sms sms = (Sms) obj;
             if (!sms.isATransactionSms()) {
                 System.out.println("This invalid sms is " + sms);
@@ -55,7 +59,7 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
     List<Sms> readExistingSms() {
         List<Sms> sms = new ArrayList();
         String[] projection = new String[]{"_id", "address", "body", "date"};
-        Cursor cur = contentResolver.query(Uri.parse("content://sms/"), projection, null, null, "date desc");
+        Cursor cur = activity.getContentResolver().query(Uri.parse("content://sms/"), projection, null, null, "date desc");
         if (cur.moveToFirst()) {
             int index_Address = cur.getColumnIndex("address");
             int index_Body = cur.getColumnIndex("body");

@@ -2,10 +2,15 @@ package com.example.pavithra.yaem.activity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.pavithra.yaem.AppDatabase;
@@ -17,17 +22,24 @@ import com.example.pavithra.yaem.service.async.SyncExistingSms;
 
 
 public class AddAccount extends AppCompatActivity {
+    final int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
-//        CreateAccount testSetUp = new CreateAccount(AppDatabase.getInstance(getApplicationContext()));
+//        CreateAccount testSetUp = new CreateAccount(AppDatabase.getInstance(getApplicationContext()), this);
 //        testSetUp.execute(new Account("AM-FROMSC"), new Account("AD-FROMSC"));
-//        syncExistingSmsOnce();
+        requestSmsPermission();
         GetAccounts getAccounts = new GetAccounts(AppDatabase.getInstance(getApplicationContext()), this);
         getAccounts.execute();
 
+    }
+
+    private void requestSmsPermission() {
+        if (ContextCompat.checkSelfPermission(getBaseContext(), "android.permission.READ_SMS") != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{"android.permission.READ_SMS"}, REQUEST_CODE_ASK_PERMISSIONS);
+        }
     }
 
     private void syncExistingSmsOnce() {
@@ -38,14 +50,29 @@ public class AddAccount extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("freshInstall", false);
             editor.commit();
-            SyncExistingSms syncExistingSmsTask = new SyncExistingSms(AppDatabase.getInstance(getApplicationContext()), getContentResolver());
+            SyncExistingSms syncExistingSmsTask = new SyncExistingSms(AppDatabase.getInstance(getApplicationContext()), this);
             syncExistingSmsTask.execute();
         }
     }
 
     public void addAccount(View view) {
-        //        CreateAccount testSetUp = new CreateAccount(AppDatabase.getInstance(getApplicationContext()));
-//        testSetUp.execute();
+        EditText textView = findViewById(R.id.editText);
+        String accountName = textView.getText().toString();
+        if (accountName != null && accountName != "") {
+            CreateAccount testSetUp = new CreateAccount(AppDatabase.getInstance(getApplicationContext()), this);
+            testSetUp.execute(new Account(accountName));
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    syncExistingSmsOnce();
+                }
+            }
+        }
     }
 }
