@@ -1,4 +1,4 @@
-package com.example.pavithra.yaem.model.tasks.sms;
+package com.example.pavithra.yaem.service.async.sms;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -11,10 +11,10 @@ import com.example.pavithra.yaem.model.Sms;
 import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
 import com.example.pavithra.yaem.service.SmsService;
+import com.example.pavithra.yaem.service.async.SyncExistingSms;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -25,10 +25,8 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;

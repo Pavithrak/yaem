@@ -5,10 +5,15 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.R;
-import com.example.pavithra.yaem.model.tasks.sms.SyncExistingSms;
+import com.example.pavithra.yaem.persistence.Account;
+import com.example.pavithra.yaem.service.async.CreateAccount;
+import com.example.pavithra.yaem.service.async.GetAccounts;
+import com.example.pavithra.yaem.service.async.SyncExistingSms;
 
 
 public class AddAccount extends AppCompatActivity {
@@ -18,8 +23,11 @@ public class AddAccount extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
 //        CreateAccount testSetUp = new CreateAccount(AppDatabase.getInstance(getApplicationContext()));
-//        testSetUp.execute();
+//        testSetUp.execute(new Account("AM-FROMSC"), new Account("AD-FROMSC"));
 //        syncExistingSmsOnce();
+        GetAccounts getAccounts = new GetAccounts(AppDatabase.getInstance(getApplicationContext()), this);
+        getAccounts.execute();
+
     }
 
     private void syncExistingSmsOnce() {

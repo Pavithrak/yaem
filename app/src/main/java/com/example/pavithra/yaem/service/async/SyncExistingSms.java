@@ -1,4 +1,4 @@
-package com.example.pavithra.yaem.model.tasks.sms;
+package com.example.pavithra.yaem.service.async;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
