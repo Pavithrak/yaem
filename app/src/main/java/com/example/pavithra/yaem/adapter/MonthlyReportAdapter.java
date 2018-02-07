@@ -2,6 +2,7 @@ package com.example.pavithra.yaem.adapter;
 
 import android.arch.persistence.room.util.StringUtil;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.pavithra.yaem.R;
+import com.example.pavithra.yaem.activity.DailyReport;
 import com.example.pavithra.yaem.common.Utils;
+import com.example.pavithra.yaem.model.MonthYear;
 import com.example.pavithra.yaem.model.MonthlyReport;
 
 import java.util.List;
@@ -56,7 +59,9 @@ public class MonthlyReportAdapter extends ArrayAdapter<MonthlyReport> {
 
         @Override
         public void onClick(View v) {
-
+            Intent intent = new Intent(getContext(), DailyReport.class);
+            intent.putExtra("monthYear", new MonthYear(report.getYear(), report.getMonth()));
+            getContext().startActivity(intent);
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.pavithra.yaem.model;
 
-public class MonthYear {
+import java.io.Serializable;
+
+public class MonthYear implements Serializable {
     private Integer year;
     private Integer month;
 

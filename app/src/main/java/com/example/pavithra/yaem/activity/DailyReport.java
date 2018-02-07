@@ -21,8 +21,10 @@ public class DailyReport extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_report);
+        MonthYear monthYear = (MonthYear) getIntent().getSerializableExtra("monthYear");
+
         GetDailyReport getMonthlyReport = new GetDailyReport(this);
-        getMonthlyReport.execute(new MonthYear(2018, 1));
+        getMonthlyReport.execute(monthYear);
     }
 
     public void updateReport(List<TransactionAlert> report) {
