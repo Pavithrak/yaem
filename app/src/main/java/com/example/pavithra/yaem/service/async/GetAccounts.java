@@ -9,6 +9,7 @@ import android.widget.ListView;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.R;
+import com.example.pavithra.yaem.activity.AddAccount;
 import com.example.pavithra.yaem.persistence.Account;
 
 import java.util.ArrayList;
@@ -16,9 +17,9 @@ import java.util.List;
 
 public class GetAccounts extends AsyncTask<Void, Void, List<Account>> {
     AppDatabase appDatabase;
-    AppCompatActivity activity;
+    AddAccount activity;
 
-    public GetAccounts(AppDatabase appDatabase, AppCompatActivity activity) {
+    public GetAccounts(AppDatabase appDatabase, AddAccount activity) {
         this.appDatabase = appDatabase;
         this.activity = activity;
     }
@@ -26,13 +27,8 @@ public class GetAccounts extends AsyncTask<Void, Void, List<Account>> {
     @Override
     protected void onPostExecute(List<Account> accounts) {
         super.onPostExecute(accounts);
-        String[] accountNames = new String[accounts.size()];
-        for(int i =0; i < accounts.size(); i++) {
-            accountNames[i] = accounts.get(i).getName();
-        }
-        ArrayAdapter adapter = new ArrayAdapter(activity, android.R.layout.simple_list_item_1, accountNames);
-        ListView listView = activity.findViewById(R.id.list);
-        listView.setAdapter(adapter);
+        activity.updateAccountsList(accounts);
+
     }
 
     @Override

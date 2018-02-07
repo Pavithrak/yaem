@@ -15,21 +15,26 @@ import android.widget.ListView;
 
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.R;
+import com.example.pavithra.yaem.adapter.AccountsAdapter;
 import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.service.async.CreateAccount;
 import com.example.pavithra.yaem.service.async.GetAccounts;
 import com.example.pavithra.yaem.service.async.SyncExistingSms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class AddAccount extends AppCompatActivity {
     final int REQUEST_CODE_ASK_PERMISSIONS = 123;
+    private AccountsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_add_account);
-//        CreateAccount testSetUp = new CreateAccount(AppDatabase.getInstance(getApplicationContext()), this);
-//        testSetUp.execute(new Account("AM-FROMSC"), new Account("AD-FROMSC"));
         requestSmsPermission();
         GetAccounts getAccounts = new GetAccounts(AppDatabase.getInstance(getApplicationContext()), this);
         getAccounts.execute();
@@ -64,6 +69,11 @@ public class AddAccount extends AppCompatActivity {
         }
     }
 
+    public void notifyAdapter(Account[] accounts) {
+        adapter.addAll(accounts);
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -74,5 +84,11 @@ public class AddAccount extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    public void updateAccountsList(List<Account> accounts) {
+        this.adapter = new AccountsAdapter(this, R.layout.account_row, accounts);
+        ListView listView = findViewById(R.id.list);
+        listView.setAdapter(adapter);
     }
 }
