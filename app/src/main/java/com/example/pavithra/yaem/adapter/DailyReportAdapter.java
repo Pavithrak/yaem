@@ -1,6 +1,5 @@
 package com.example.pavithra.yaem.adapter;
 
-import android.arch.persistence.room.util.StringUtil;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +10,14 @@ import android.widget.TextView;
 import com.example.pavithra.yaem.R;
 import com.example.pavithra.yaem.common.Utils;
 import com.example.pavithra.yaem.model.MonthlyReport;
+import com.example.pavithra.yaem.persistence.TransactionAlert;
 
 import java.util.List;
 
-public class MonthlyReportAdapter extends ArrayAdapter<MonthlyReport> {
+public class DailyReportAdapter extends ArrayAdapter<TransactionAlert> {
     private int resource;
 
-    public MonthlyReportAdapter(Context context, int resource, List<MonthlyReport> items) {
+    public DailyReportAdapter(Context context, int resource, List<TransactionAlert> items) {
         super(context, resource, items);
         this.resource = resource;
     }
@@ -26,37 +26,24 @@ public class MonthlyReportAdapter extends ArrayAdapter<MonthlyReport> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View view = convertView;
-        MonthlyReport report = getItem(position);
+        TransactionAlert report = getItem(position);
 
         if (view == null) {
             LayoutInflater vi;
             vi = LayoutInflater.from(getContext());
             view = vi.inflate(resource, null);
-            view.setOnClickListener(new itemClickedListener(report));
         }
 
         TextView monthText =  view.findViewById(R.id.month_year);
-        monthText.setText(Utils.toString(report.getMonth())+ "/" + Utils.toString(report.getYear()));
+        monthText.setText(Utils.toString(report.getDate()) + "/" + Utils.toString(report.getMonth())+ "/" + Utils.toString(report.getYear()));
 
         TextView creditText =  view.findViewById(R.id.credit);
-        creditText.setText(Utils.toString(report.getTotalCredit()));
+        creditText.setText(Utils.toString(report.getCredit()));
 
         TextView debitText =  view.findViewById(R.id.debit);
-        debitText.setText(Utils.toString(report.getTotalDebit()));
+        debitText.setText(Utils.toString(report.getDebit()));
 
         return view;
     }
 
-    private class itemClickedListener implements View.OnClickListener {
-        private MonthlyReport report;
-
-        public itemClickedListener(MonthlyReport report) {
-            this.report = report;
-        }
-
-        @Override
-        public void onClick(View v) {
-
-        }
-    }
 }

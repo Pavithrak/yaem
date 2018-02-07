@@ -17,6 +17,6 @@ public interface TransactionDao {
     @Query("select year, month, sum(credit) as totalCredit, sum(debit) as totalDebit from TransactionAlert group by year, month")
     List<MonthlyReport> getAggregatedMonthlyReport();
 
-    @Query("select year, month, debit, credit from TransactionAlert where month= :month and year= :year")
+    @Query("select year, month, date, debit, credit from TransactionAlert where month= :month and year= :year")
     List<TransactionAlert> getTransactionAlerts(Integer month, Integer year);
 }
