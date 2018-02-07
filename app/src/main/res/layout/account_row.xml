@@ -22,7 +22,7 @@
 
 
         <ImageButton
-            android:id="@+id/close"
+            android:id="@+id/deleteAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
