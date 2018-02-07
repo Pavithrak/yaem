@@ -4,7 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.example.pavithra.yaem.model.AggregatedMonthlyReport;
+import com.example.pavithra.yaem.model.MonthlyReport;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface TransactionDao {
     void add(List<TransactionAlert> transactions);
 
     @Query("select year, month, sum(credit) as totalCredit, sum(debit) as totalDebit from TransactionAlert group by year, month")
-    List<AggregatedMonthlyReport> getAggregatedMonthlyReport();
+    List<MonthlyReport> getAggregatedMonthlyReport();
 
     @Query("select year, month, debit, credit from TransactionAlert where month= :month and year= :year")
     List<TransactionAlert> getTransactionAlerts(Integer month, Integer year);

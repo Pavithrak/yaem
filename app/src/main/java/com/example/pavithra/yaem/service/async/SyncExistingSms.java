@@ -1,12 +1,8 @@
 package com.example.pavithra.yaem.service.async;
 
-import android.content.ContentResolver;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.pavithra.yaem.AppDatabase;
@@ -15,27 +11,29 @@ import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
 import com.example.pavithra.yaem.service.SmsService;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class SyncExistingSms extends AsyncTask<Void, Void, List> {
+public class SyncExistingSms extends AsyncTask<Account, Void, List> {
     private AppCompatActivity activity;
     private AppDatabase appDatabase;
 
-    public SyncExistingSms(AppDatabase appDatabase, AppCompatActivity activity) {
-        this.appDatabase = appDatabase;
+    public SyncExistingSms(AppCompatActivity activity) {
         this.activity = activity;
+        this.appDatabase = AppDatabase.getInstance(activity.getApplicationContext());
     }
 
     @Override
-    protected List<Sms> doInBackground(Void... voids) {
-        List<Account> accounts = appDatabase.accountDao().getAccounts();
+    protected List<Sms> doInBackground(Account... accounts) {
         List<Sms> sms = this.readExistingSms();
         List<TransactionAlert> transactionAlerts = getSmsService(sms, accounts).getFilteredTransactionAlerts();
         saveTransactionAlerts(transactionAlerts);
         return sms;
     }
+
 
     @Override
     protected void onPostExecute(List list) {
@@ -52,8 +50,8 @@ public class SyncExistingSms extends AsyncTask<Void, Void, List> {
         appDatabase.transactionDao().add(transactionAlerts);
     }
 
-    SmsService getSmsService(List<Sms> sms, List<Account> accounts) {
-        return new SmsService(sms, accounts);
+    SmsService getSmsService(List<Sms> sms, Account[] accounts) {
+        return new SmsService(sms, Arrays.asList(accounts));
     }
 
     List<Sms> readExistingSms() {

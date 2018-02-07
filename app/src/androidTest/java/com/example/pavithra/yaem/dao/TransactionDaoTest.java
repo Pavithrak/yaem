@@ -6,7 +6,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.pavithra.yaem.AppDatabase;
-import com.example.pavithra.yaem.model.AggregatedMonthlyReport;
+import com.example.pavithra.yaem.model.MonthlyReport;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
 
 import org.junit.After;
@@ -45,22 +45,22 @@ public class TransactionDaoTest {
 
     @Test
     public void shouldGetMonthlyReport() throws Exception {
-        List<AggregatedMonthlyReport> aggregatedMonthlyReport = transactionDao.getAggregatedMonthlyReport();
+        List<MonthlyReport> monthlyReport = transactionDao.getAggregatedMonthlyReport();
 
-        assertEquals(4, aggregatedMonthlyReport.size());
-        AggregatedMonthlyReport report = findAggregationFor(aggregatedMonthlyReport, 1, 2017);
+        assertEquals(4, monthlyReport.size());
+        MonthlyReport report = findAggregationFor(monthlyReport, 1, 2017);
         assertEquals(new Double(170), report.getTotalCredit());
         assertEquals(new Double(360), report.getTotalDebit());
 
-        report = findAggregationFor(aggregatedMonthlyReport, 1, 2016);
+        report = findAggregationFor(monthlyReport, 1, 2016);
         assertEquals(new Double(80), report.getTotalCredit());
         assertNull(report.getTotalDebit());
 
-        report = findAggregationFor(aggregatedMonthlyReport, 2, 2017);
+        report = findAggregationFor(monthlyReport, 2, 2017);
         assertEquals(new Double(90), report.getTotalCredit());
         assertEquals(new Double(140), report.getTotalDebit());
 
-        report = findAggregationFor(aggregatedMonthlyReport, 2, 2016);
+        report = findAggregationFor(monthlyReport, 2, 2016);
         assertNull(report.getTotalCredit());
         assertEquals(new Double(150), report.getTotalDebit());
     }
@@ -105,9 +105,9 @@ public class TransactionDaoTest {
         return match;
     }
 
-    private AggregatedMonthlyReport findAggregationFor(List<AggregatedMonthlyReport> aggregatedMonthlyReports, Integer month, Integer year) {
-        AggregatedMonthlyReport matchingReport = null;
-        for(AggregatedMonthlyReport report : aggregatedMonthlyReports) {
+    private MonthlyReport findAggregationFor(List<MonthlyReport> monthlyReports, Integer month, Integer year) {
+        MonthlyReport matchingReport = null;
+        for(MonthlyReport report : monthlyReports) {
             if (month.equals(report.getMonth()) && year.equals(report.getYear())) {
                 matchingReport = report;
                 break;

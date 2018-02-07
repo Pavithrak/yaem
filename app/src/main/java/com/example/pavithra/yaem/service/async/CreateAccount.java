@@ -11,9 +11,9 @@ public class CreateAccount extends AsyncTask<Account, Void, Account[]> {
     AppDatabase appDatabase;
     AddAccount activity;
 
-    public CreateAccount(AppDatabase appDatabase, AddAccount activity) {
-        this.appDatabase = appDatabase;
+    public CreateAccount(AddAccount activity) {
         this.activity = activity;
+        this.appDatabase = AppDatabase.getInstance(activity.getApplicationContext());
     }
 
     @Override
@@ -21,7 +21,7 @@ public class CreateAccount extends AsyncTask<Account, Void, Account[]> {
         super.onPostExecute(accounts);
         Toast toast = Toast.makeText(activity.getApplicationContext(), "Account addded", Toast.LENGTH_LONG);
         toast.show();
-        activity.notifyAdapter(accounts);
+        activity.newAccountsAdded(accounts);
     }
 
     @Override

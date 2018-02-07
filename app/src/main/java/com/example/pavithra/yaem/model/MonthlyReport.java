@@ -1,12 +1,12 @@
 package com.example.pavithra.yaem.model;
 
-public class AggregatedMonthlyReport {
+public class MonthlyReport {
     private Integer year;
     private Integer month;
     private Double totalCredit;
     private Double totalDebit;
 
-    public AggregatedMonthlyReport(Integer year, Integer month, Double totalCredit, Double totalDebit) {
+    public MonthlyReport(Integer year, Integer month, Double totalCredit, Double totalDebit) {
         this.year = year;
         this.month = month;
         this.totalCredit = totalCredit;

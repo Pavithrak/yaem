@@ -19,9 +19,9 @@ public class GetAccounts extends AsyncTask<Void, Void, List<Account>> {
     AppDatabase appDatabase;
     AddAccount activity;
 
-    public GetAccounts(AppDatabase appDatabase, AddAccount activity) {
-        this.appDatabase = appDatabase;
+    public GetAccounts(AddAccount activity) {
         this.activity = activity;
+        this.appDatabase = AppDatabase.getInstance(activity.getApplicationContext());
     }
 
     @Override
