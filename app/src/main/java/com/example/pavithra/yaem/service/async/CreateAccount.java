@@ -4,14 +4,14 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.example.pavithra.yaem.AppDatabase;
-import com.example.pavithra.yaem.activity.AddAccount;
+import com.example.pavithra.yaem.activity.AddAccountActivity;
 import com.example.pavithra.yaem.persistence.Account;
 
 public class CreateAccount extends AsyncTask<Account, Void, Account[]> {
     AppDatabase appDatabase;
-    AddAccount activity;
+    AddAccountActivity activity;
 
-    public CreateAccount(AddAccount activity) {
+    public CreateAccount(AddAccountActivity activity) {
         this.activity = activity;
         this.appDatabase = AppDatabase.getInstance(activity.getApplicationContext());
     }

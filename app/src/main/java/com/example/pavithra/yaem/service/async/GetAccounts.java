@@ -1,25 +1,18 @@
 package com.example.pavithra.yaem.service.async;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.example.pavithra.yaem.AppDatabase;
-import com.example.pavithra.yaem.R;
-import com.example.pavithra.yaem.activity.AddAccount;
+import com.example.pavithra.yaem.activity.AddAccountActivity;
 import com.example.pavithra.yaem.persistence.Account;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GetAccounts extends AsyncTask<Void, Void, List<Account>> {
     AppDatabase appDatabase;
-    AddAccount activity;
+    AddAccountActivity activity;
 
-    public GetAccounts(AddAccount activity) {
+    public GetAccounts(AddAccountActivity activity) {
         this.activity = activity;
         this.appDatabase = AppDatabase.getInstance(activity.getApplicationContext());
     }

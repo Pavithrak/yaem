@@ -20,7 +20,7 @@ import com.example.pavithra.yaem.service.async.SyncExistingSms;
 import java.util.List;
 
 
-public class AddAccount extends AppCompatActivity {
+public class AddAccountActivity extends AppCompatActivity {
     final int REQUEST_CODE_ASK_PERMISSIONS = 123;
     private AccountsAdapter adapter;
 

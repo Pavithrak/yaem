@@ -14,7 +14,7 @@ import com.example.pavithra.yaem.service.async.GetMonthlyReport;
 
 import java.util.List;
 
-public class DailyReport extends AppCompatActivity {
+public class DailyReportActivity extends AppCompatActivity {
     DailyReportAdapter adapter;
 
     @Override

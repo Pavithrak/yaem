@@ -1,5 +1,6 @@
 package com.example.pavithra.yaem.activity;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,5 +29,10 @@ public class MonthlyReportActivity extends AppCompatActivity {
         adapter = new MonthlyReportAdapter(this, R.layout.monthly_report_row, report);
         ListView listView = findViewById(R.id.monthlyReportList);
         listView.setAdapter(adapter);
+    }
+
+    public void openAddAccountActivity(View view) {
+        Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
+        startActivity(intent);
     }
 }
