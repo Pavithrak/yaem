@@ -1,4 +1,4 @@
-package com.example.pavithra.yaem.service.async.sms;
+package com.example.pavithra.yaem.service.async;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -90,13 +90,13 @@ public class SyncExistingSmsTest {
         Sms sms2 = new Sms("AD-SOMEOTHERBANK", "Some random sms", new Date());
         Sms sms3 = new Sms("AD-SOMERANDOMBANK", "credited by INR 190 on 20-Dec-2017", new Date());
         List<Sms> allSms = asList(sms, sms1, sms2, sms3);
-        doReturn(mockSmsService).when(spy).getSmsService(allSms, accounts);
+        doReturn(mockSmsService).when(spy).getSmsService(allSms, (Account[]) accounts.toArray());
 
         TransactionDao mockTransactionDao = mock(TransactionDao.class);
         when(appDatabase.transactionDao()).thenReturn(mockTransactionDao);
 
         doReturn(allSms).when(spy).readExistingSms();
-        doReturn(mockSmsService).when(spy).getSmsService(allSms, accounts);
+        doReturn(mockSmsService).when(spy).getSmsService(allSms, (Account[]) accounts.toArray());
 
         spy.doInBackground();
 

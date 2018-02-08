@@ -97,4 +97,47 @@ public class SmsTest {
                 new Date());
         assertFalse(sms.isATransactionSms());
     }
+
+    @Test
+    public void testPossibleCombinations() throws Exception {
+        Sms sms = new Sms("AD-BANK",
+                "Dear Customer, Your a/c no. XXXXXXXX6675 is debited for Rs.30,000.00 on 07-Feb-2018 09:26:27 and a/c XXXXXXXX4691 credited (IMPS Ref no 12345)",
+                new Date());
+        Double amount = sms.getWithdrawlAmount();
+        assertEquals(new Double(30000), amount);
+        assertEquals(2018, sms.getTransactionYear().intValue());
+        assertEquals(2, sms.getTransactionMonth().intValue());
+        assertEquals(7, sms.getTransactionDay().intValue());
+
+
+        sms = new Sms("AD-BANK",
+                "Dear Customer, your Account XX6675 has been debited with INR 30,000.00 on 07-Feb-18. Info: MMT*Ref803809040238*30600100. The Available Balance is INR 1,23,456.53.",
+                new Date());
+        amount = sms.getWithdrawlAmount();
+        assertEquals(new Double(30000), amount);
+        assertEquals(2018, sms.getTransactionYear().intValue());
+        assertEquals(2, sms.getTransactionMonth().intValue());
+        assertEquals(7, sms.getTransactionDay().intValue());
+
+
+        sms = new Sms("AD-BANK",
+                "Ac XXXXXXXX0001234 Debited with Rs.15000.00,05-02-2018 13:57:45 thru IBS. Aval Bal Rs.1234.74 CR. Avail PNB Mobile banking. Visit https://mobile.netpnb.com",
+                new Date());
+        amount = sms.getWithdrawlAmount();
+        assertEquals(new Double(15000), amount);
+        assertEquals(2018, sms.getTransactionYear().intValue());
+        assertEquals(2, sms.getTransactionMonth().intValue());
+        assertEquals(5, sms.getTransactionDay().intValue());
+
+
+        sms = new Sms("AD-BANK",
+                "Ac XXXXXXXX001234 Credited with Rs.2000.00,07-02-2018 15:01:26 thru NEFT from MS PAVITHRA KRISHNAN. Aval Bal 1234.94 CR Helpline 18001802222",
+                new Date());
+        amount = sms.getCreditedAmount();
+        assertEquals(new Double(2000), amount);
+        assertEquals(2018, sms.getTransactionYear().intValue());
+        assertEquals(2, sms.getTransactionMonth().intValue());
+        assertEquals(7, sms.getTransactionDay().intValue());
+
+    }
 }

@@ -50,14 +50,14 @@ public class AddAccount extends AppCompatActivity {
         EditText textView = findViewById(R.id.editText);
         String accountName = textView.getText().toString();
         if (accountName != null && accountName != "") {
-            CreateAccount testSetUp = new CreateAccount(this);
-            testSetUp.execute(new Account(accountName));
+            CreateAccount createAccount = new CreateAccount(this);
+            createAccount.execute(new Account(accountName));
         }
     }
 
     public void newAccountsAdded(Account[] accounts) {
-        adapter.addAll(accounts);
         syncExistingSms(accounts);
+        adapter.addAll(accounts);
         adapter.notifyDataSetChanged();
     }
 

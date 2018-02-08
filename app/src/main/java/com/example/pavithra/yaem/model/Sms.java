@@ -15,16 +15,16 @@ public class Sms {
     private String body;
     private Date date;
     private final List<Pattern> withdrawalRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("debited.*by (INR\\s|Rs.)(\\d[^\\sA-Za-z]*)"));
+        add(Pattern.compile("[d|D]ebited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.\\d+)"));
         add(Pattern.compile("of (INR\\s|Rs.)(\\d[^\\s]*).*Credit Card"));
     }};
     private final List<Pattern> creditRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("credited.*by (INR\\s|Rs.)(\\d[^\\sA-Za-z]*)"));
+        add(Pattern.compile("[C|c]redited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.\\d+)"));
     }};
     private final List<Pattern> dateRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("on.([^\\s|.]*)"));
+        add(Pattern.compile("(\\d{1,2}[-|\\/](\\d{1,2}|[a-zA-Z]{3})[-|\\/]\\d{2,4})"));
     }};
-    private final List<String> dateFormat = new ArrayList<String>() {{
+    private final List<String> dateFormats = new ArrayList<String>() {{
         add("dd-MM-yyyy");
         add("dd-MMM-yyyy");
         add("dd-MMM-yy");
@@ -128,7 +128,7 @@ public class Sms {
 
     private Date convertStringToDate(String date) {
         Date parsedDate = null;
-        for (String dateFormat : this.dateFormat) {
+        for (String dateFormat : this.dateFormats) {
             SimpleDateFormat format = new SimpleDateFormat(dateFormat);
             try {
                 parsedDate = format.parse(date);
