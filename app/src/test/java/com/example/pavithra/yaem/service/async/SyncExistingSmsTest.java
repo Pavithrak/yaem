@@ -3,15 +3,16 @@ package com.example.pavithra.yaem.service.async;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.pavithra.yaem.AppDatabase;
+import com.example.pavithra.yaem.TestHelper.MyLiveData;
 import com.example.pavithra.yaem.dao.AccountDao;
 import com.example.pavithra.yaem.dao.TransactionDao;
 import com.example.pavithra.yaem.model.Sms;
 import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
 import com.example.pavithra.yaem.service.SmsService;
-import com.example.pavithra.yaem.service.async.SyncExistingSms;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,15 +37,17 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SyncExistingSmsTest {
     @Mock
-    AppDatabase appDatabase;
+    AppCompatActivity activity;
     @Mock
-    ContentResolver contentResolver;
+    AppDatabase appDatabase;
     @InjectMocks
     SyncExistingSms syncExistingSms;
 
     @Test
     public void shouldReadAndFilterSmsBasedOnPresetAddress() throws Exception {
         SyncExistingSms spy = spy(syncExistingSms);
+        ContentResolver mockContentResolver = mock(ContentResolver.class);
+
         String[] projection = new String[]{"_id", "address", "body", "date"};
         Cursor mockCursor = mock(Cursor.class);
         AccountDao mockAccountDao = mock(AccountDao.class);
@@ -56,9 +59,11 @@ public class SyncExistingSmsTest {
         when(mockCursor.getString(0)).thenReturn("address1").thenReturn("address2");
         when(mockCursor.getString(1)).thenReturn("body1").thenReturn("body2");
         when(mockCursor.getLong(2)).thenReturn(12345l).thenReturn(12345l);
-        when(contentResolver.query(any(Uri.class), eq(projection), anyString(), any(String[].class), eq("date desc"))).thenReturn(mockCursor);
+        when(activity.getContentResolver()).thenReturn(mockContentResolver);
+        when(mockContentResolver.query(any(Uri.class), eq(projection), anyString(), any(String[].class), eq("date desc"))).thenReturn(mockCursor);
         when(appDatabase.accountDao()).thenReturn(mockAccountDao);
-        when(mockAccountDao.getAccounts()).thenReturn(asList(new Account("address1")));
+        final List<Account> accounts = asList(new Account("address1"));
+        when(mockAccountDao.getAccounts()).thenReturn(new MyLiveData<List<Account>>(accounts));
 
         List<Sms> allSms = spy.readExistingSms();
 
@@ -77,9 +82,6 @@ public class SyncExistingSmsTest {
 
         List<Account> accounts = asList(new Account(1l, "AD-SOMEBANK", null),
                 new Account(2l, "AD-SOMEOTHERBANK", null));
-        AccountDao mockAccountDao = mock(AccountDao.class);
-        when(appDatabase.accountDao()).thenReturn(mockAccountDao);
-        when(mockAccountDao.getAccounts()).thenReturn(accounts);
 
         SmsService mockSmsService = mock(SmsService.class);
         List<TransactionAlert> transactionAlerts = asList(TransactionAlert.builder().build());
@@ -90,7 +92,6 @@ public class SyncExistingSmsTest {
         Sms sms2 = new Sms("AD-SOMEOTHERBANK", "Some random sms", new Date());
         Sms sms3 = new Sms("AD-SOMERANDOMBANK", "credited by INR 190 on 20-Dec-2017", new Date());
         List<Sms> allSms = asList(sms, sms1, sms2, sms3);
-        doReturn(mockSmsService).when(spy).getSmsService(allSms, (Account[]) accounts.toArray());
 
         TransactionDao mockTransactionDao = mock(TransactionDao.class);
         when(appDatabase.transactionDao()).thenReturn(mockTransactionDao);
@@ -98,7 +99,7 @@ public class SyncExistingSmsTest {
         doReturn(allSms).when(spy).readExistingSms();
         doReturn(mockSmsService).when(spy).getSmsService(allSms, (Account[]) accounts.toArray());
 
-        spy.doInBackground();
+        spy.doInBackground((Account[]) accounts.toArray());
 
         verify(mockTransactionDao).add(transactionAlerts);
     }

@@ -11,7 +11,6 @@ import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
 import com.example.pavithra.yaem.service.SmsService;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -24,6 +23,11 @@ public class SyncExistingSms extends AsyncTask<Account, Void, List> {
     public SyncExistingSms(AppCompatActivity activity) {
         this.activity = activity;
         this.appDatabase = AppDatabase.getInstance(activity.getApplicationContext());
+    }
+
+    public SyncExistingSms(AppCompatActivity activity, AppDatabase appDatabase) {
+        this.activity = activity;
+        this.appDatabase = appDatabase;
     }
 
     @Override

@@ -101,10 +101,10 @@ public class SmsTest {
     @Test
     public void testPossibleCombinations() throws Exception {
         Sms sms = new Sms("AD-BANK",
-                "Dear Customer, Your a/c no. XXXXXXXX6675 is debited for Rs.30,000.00 on 07-Feb-2018 09:26:27 and a/c XXXXXXXX4691 credited (IMPS Ref no 12345)",
+                "Dear Customer, Your a/c no. XXXXXXXX6675 is debited for Rs.456 on 07-Feb-2018 09:26:27 and a/c XXXXXXXX4691 credited (IMPS Ref no 12345)",
                 new Date());
         Double amount = sms.getWithdrawlAmount();
-        assertEquals(new Double(30000), amount);
+        assertEquals(new Double(456), amount);
         assertEquals(2018, sms.getTransactionYear().intValue());
         assertEquals(2, sms.getTransactionMonth().intValue());
         assertEquals(7, sms.getTransactionDay().intValue());

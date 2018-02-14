@@ -15,11 +15,11 @@ public class Sms {
     private String body;
     private Date date;
     private final List<Pattern> withdrawalRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("[d|D]ebited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.\\d+)"));
-        add(Pattern.compile("of (INR\\s|Rs.)(\\d[^\\s]*).*Credit Card"));
+        add(Pattern.compile("[d|D]ebited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.?\\d*)"));
+        add(Pattern.compile("of (INR\\s|Rs.)(\\d+,?\\d+\\.?\\d+?).*Credit Card"));
     }};
     private final List<Pattern> creditRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("[C|c]redited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.\\d+)"));
+        add(Pattern.compile("[C|c]redited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.?\\d*)"));
     }};
     private final List<Pattern> dateRegex = new ArrayList<Pattern>() {{
         add(Pattern.compile("(\\d{1,2}[-|\\/](\\d{1,2}|[a-zA-Z]{3})[-|\\/]\\d{2,4})"));

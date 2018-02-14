@@ -1,10 +1,15 @@
 package com.example.pavithra.yaem.listener;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Telephony;
+import android.support.annotation.Nullable;
 
 import com.example.pavithra.yaem.AppDatabase;
+import com.example.pavithra.yaem.TestHelper;
+import com.example.pavithra.yaem.TestHelper.MyLiveData;
+import com.example.pavithra.yaem.activity.MonthlyReportActivity;
 import com.example.pavithra.yaem.dao.AccountDao;
 import com.example.pavithra.yaem.dao.TransactionDao;
 import com.example.pavithra.yaem.model.Sms;
@@ -15,6 +20,7 @@ import com.example.pavithra.yaem.service.SmsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Date;
@@ -31,6 +37,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NewSmsListenerTest {
+    @Mock
+    MonthlyReportActivity activity;
     @InjectMocks
     NewSmsListener newSmsListener;
     @Test
@@ -40,11 +48,11 @@ public class NewSmsListenerTest {
         AppDatabase mockAppDatabase = mock(AppDatabase.class);
         doReturn(mockAppDatabase).when(spyListener).getAppDatabase(any(Context.class));
 
-        List<Account> accounts = asList(new Account(1l, "AD-SOMEBANK", null),
+        final List<Account> accounts = asList(new Account(1l, "AD-SOMEBANK", null),
                 new Account(2l, "AD-SOMEOTHERBANK", null));
         AccountDao mockAccountDao = mock(AccountDao.class);
         when(mockAppDatabase.accountDao()).thenReturn(mockAccountDao);
-        when(mockAccountDao.getAccounts()).thenReturn(accounts);
+        when(mockAccountDao.getAccounts()).thenReturn(new MyLiveData<List<Account>>(accounts));
 
         Intent mockIntent = mock(Intent.class);
         when(mockIntent.getAction()).thenReturn(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);

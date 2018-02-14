@@ -18,11 +18,11 @@
             android:windowSoftInputMode="adjustPan|stateHidden">
         </activity>
 
-        <receiver android:name=".listener.NewSmsListener">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver android:name=".listener.NewSmsListener">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.provider.Telephony.SMS_RECEIVED" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <activity android:name=".activity.MonthlyReportActivity">
             <intent-filter>

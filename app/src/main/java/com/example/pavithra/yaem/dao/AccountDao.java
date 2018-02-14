@@ -1,5 +1,6 @@
 package com.example.pavithra.yaem.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
@@ -18,5 +19,5 @@ public interface AccountDao {
     void delete(long id);
 
     @Query("select * from Account")
-    List<Account> getAccounts();
+    LiveData<List<Account>> getAccounts();
 }
