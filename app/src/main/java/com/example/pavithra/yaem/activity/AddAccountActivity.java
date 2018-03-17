@@ -52,7 +52,7 @@ public class AddAccountActivity extends AppCompatActivity {
 
     private void observeAccountsList() {
         AppDatabase appDatabase = AppDatabase.getInstance(getApplicationContext());
-        LiveData<List<Account>> accounts = appDatabase.accountDao().getAccounts();
+        LiveData<List<Account>> accounts = appDatabase.accountDao().getAccountsData();
         accounts.observe(this, new AccountsCallback());
     }
 

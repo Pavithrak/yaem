@@ -63,7 +63,7 @@ public class SyncExistingSmsTest {
         when(mockContentResolver.query(any(Uri.class), eq(projection), anyString(), any(String[].class), eq("date desc"))).thenReturn(mockCursor);
         when(appDatabase.accountDao()).thenReturn(mockAccountDao);
         final List<Account> accounts = asList(new Account("address1"));
-        when(mockAccountDao.getAccounts()).thenReturn(new MyLiveData<List<Account>>(accounts));
+        when(mockAccountDao.getAccountsData()).thenReturn(new MyLiveData<List<Account>>(accounts));
 
         List<Sms> allSms = spy.readExistingSms();
 

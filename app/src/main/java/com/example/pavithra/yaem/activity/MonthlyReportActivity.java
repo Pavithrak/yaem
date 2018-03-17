@@ -28,7 +28,6 @@ public class MonthlyReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grouped_expense);
-        registerNewSmsReceiver();
         requestSmsPermission();
         GetMonthlyReport getMonthlyReport = new GetMonthlyReport(this);
         getMonthlyReport.execute();
@@ -43,12 +42,6 @@ public class MonthlyReportActivity extends AppCompatActivity {
     public void openAddAccountActivity(View view) {
         Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
         startActivity(intent);
-    }
-
-    private void registerNewSmsReceiver() {
-        NewSmsListener newSmsListener = new NewSmsListener(this);
-        IntentFilter intent = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
-        registerReceiver(newSmsListener, intent);
     }
 
     private void requestSmsPermission() {

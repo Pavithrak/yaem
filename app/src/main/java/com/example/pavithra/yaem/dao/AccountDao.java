@@ -19,5 +19,8 @@ public interface AccountDao {
     void delete(long id);
 
     @Query("select * from Account")
-    LiveData<List<Account>> getAccounts();
+    LiveData<List<Account>> getAccountsData();
+
+    @Query("select * from Account")
+    List<Account> getAccounts();
 }

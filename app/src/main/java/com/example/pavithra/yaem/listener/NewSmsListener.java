@@ -1,44 +1,43 @@
 package com.example.pavithra.yaem.listener;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.provider.Telephony;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.telephony.SmsMessage;
 
 import com.example.pavithra.yaem.AppDatabase;
-import com.example.pavithra.yaem.activity.AddAccountActivity;
-import com.example.pavithra.yaem.activity.MonthlyReportActivity;
 import com.example.pavithra.yaem.model.Sms;
 import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.persistence.TransactionAlert;
 import com.example.pavithra.yaem.service.SmsService;
+import com.example.pavithra.yaem.service.async.GetAccounts;
+import com.example.pavithra.yaem.service.async.AsyncTaskCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewSmsListener extends BroadcastReceiver {
-    MonthlyReportActivity activity;
-
-    public NewSmsListener(MonthlyReportActivity activity) {
-        this.activity = activity;
-    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         AppDatabase appDatabase = getAppDatabase(context);
         if (Telephony.Sms.Intents.SMS_RECEIVED_ACTION.equals(intent.getAction())) {
-            LiveData<List<Account>> liveData = appDatabase.accountDao().getAccounts();
-
             List<Sms> smsList = getNewSms(intent);
-            liveData.observe(activity, new AccountsCallback(appDatabase, smsList));
+            GetAccounts getAccounts = getAccountsAsync(appDatabase, smsList);
+            getAccounts.execute();
         }
     }
 
-   SmsService getSmsService(List<Sms> smsList, List<Account> accounts) {
+    @NonNull
+    GetAccounts getAccountsAsync(AppDatabase appDatabase, List<Sms> smsList) {
+        GetAccounts getAccounts = new GetAccounts(new AccountsCallback(appDatabase, smsList), appDatabase);
+        return getAccounts;
+    }
+
+    SmsService getSmsService(List<Sms> smsList, List<Account> accounts) {
         return new SmsService(smsList, accounts);
     }
 
@@ -56,7 +55,7 @@ public class NewSmsListener extends BroadcastReceiver {
         return smsList;
     }
 
-    private class AccountsCallback implements Observer<List<Account>> {
+    private class AccountsCallback implements AsyncTaskCallback<List<Account>> {
         private AppDatabase appDatabase;
         private List<Sms> newSms;
 
@@ -66,9 +65,12 @@ public class NewSmsListener extends BroadcastReceiver {
         }
 
         @Override
-        public void onChanged(@Nullable List<Account> accounts) {
+        public void onSuccessBackground(List<Account> accounts) {
             List<TransactionAlert> transactionAlerts = getSmsService(newSms, accounts).getFilteredTransactionAlerts();
             appDatabase.transactionDao().add(transactionAlerts);
         }
+
+        @Override
+        public void onSuccess(List<Account> accounts) {}
     }
 }
