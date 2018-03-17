@@ -2,7 +2,6 @@ package com.example.pavithra.yaem.model;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,27 +9,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+
 public class Sms {
     private String address;
     private String body;
     private Date date;
-    private final List<Pattern> withdrawalRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("[d|D]ebited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.?\\d*)"));
-        add(Pattern.compile("of (INR\\s|Rs.)(\\d+,?\\d+\\.?\\d+?).*Credit Card"));
-    }};
-    private final List<Pattern> creditRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("[C|c]redited.*?(INR\\s|Rs.)(\\d+,?\\d+\\.?\\d*)"));
-    }};
-    private final List<Pattern> dateRegex = new ArrayList<Pattern>() {{
-        add(Pattern.compile("(\\d{1,2}[-|\\/](\\d{1,2}|[a-zA-Z]{3})[-|\\/]\\d{2,4})"));
-    }};
-    private final List<String> dateFormats = new ArrayList<String>() {{
-        add("dd-MM-yyyy");
-        add("dd-MMM-yyyy");
-        add("dd-MMM-yy");
-        add("dd/MM/yyyy");
-        add("dd/MMM/yyyy");
-        add("dd/MMM/yy");
+    private final Pattern debitSMS = Pattern.compile("debited|debit|purchase|Credit Card", CASE_INSENSITIVE);
+
+    private final Pattern creditSMS = Pattern.compile("credit|credited", CASE_INSENSITIVE);
+
+    private final Pattern creditIgnoreSMS = Pattern.compile("Credit Card", CASE_INSENSITIVE);
+
+    private final List<Pattern> amountRegex = new ArrayList<Pattern>() {{
+        add(Pattern.compile(".*?(INR\\s|Rs[^\\d]?)(\\d+,?\\d+\\.?\\d*)"));
     }};
 
     public Sms(String address, String body, Date date) {
@@ -47,12 +39,24 @@ public class Sms {
         return body;
     }
 
-    public Double getWithdrawlAmount() {
-        return this.getAmount(this.withdrawalRegex);
+    public Double getWithdrawalAmount() {
+        Double amount = null;
+        Matcher matcher = debitSMS.matcher(this.body);
+        if (matcher.find()) {
+            amount = this.getAmount(this.amountRegex);
+        }
+        return amount;
     }
 
     public Double getCreditedAmount() {
-        return this.getAmount(this.creditRegex);
+        Double amount = null;
+        Matcher matcher = creditSMS.matcher(this.body);
+        Matcher ignoreMatcher = creditIgnoreSMS.matcher(this.body);
+        if (matcher.find() && !ignoreMatcher.find())  {
+            amount = this.getAmount(this.amountRegex);
+        }
+        return amount;
+
     }
 
     public Integer getTransactionMonth() {
@@ -75,7 +79,7 @@ public class Sms {
     }
 
     public boolean isATransactionSms() {
-        return this.getWithdrawlAmount() != null || this.getCreditedAmount() != null;
+        return this.getWithdrawalAmount() != null || this.getCreditedAmount() != null;
     }
 
     @Override
@@ -86,21 +90,22 @@ public class Sms {
                 ", date=" + date + '\'' +
                 ", getTransactionDate=" + this.getTransactionDate() + '\'' +
                 ", getCredit =" + this.getCreditedAmount() + '\'' +
-                ", getDebit =" + this.getWithdrawlAmount() + '\'' +
+                ", getDebit =" + this.getWithdrawalAmount() + '\'' +
                 '}';
     }
 
     private Date getTransactionDate() {
-        Date transDate = null;
-        for (Pattern pattern : this.dateRegex) {
-            Matcher matcher = pattern.matcher(this.body);
-            if (matcher.find()) {
-                String date = matcher.group(1);
-                transDate = convertStringToDate(date);
-                break;
-            }
-        }
-        return transDate == null ? this.date : transDate;
+//        Date transDate = null;
+//        for (Pattern pattern : this.dateRegex) {
+//            Matcher matcher = pattern.matcher(this.body);
+//            if (matcher.find()) {
+//                String date = matcher.group(1);
+//                transDate = convertStringToDate(date);
+//                break;
+//            }
+//        }
+//        return transDate == null ? this.date : transDate;
+        return this.date;
     }
 
     private Double getAmount(List<Pattern> patterns) {
@@ -124,19 +129,6 @@ public class Sms {
     private String removeTrailingDot(String trimmedValue) {
         Matcher matcher = Pattern.compile("(.*)\\.$").matcher(trimmedValue);
         return matcher.find() ? matcher.group(1) : trimmedValue;
-    }
-
-    private Date convertStringToDate(String date) {
-        Date parsedDate = null;
-        for (String dateFormat : this.dateFormats) {
-            SimpleDateFormat format = new SimpleDateFormat(dateFormat);
-            try {
-                parsedDate = format.parse(date);
-                break;
-            } catch (ParseException e) {
-            }
-        }
-        return parsedDate;
     }
 
     private Double convertStringToDouble(String number) {

@@ -2,7 +2,6 @@ package com.example.pavithra.yaem.model;
 
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -14,20 +13,20 @@ public class SmsTest {
         Sms sms = new Sms("AD-BANK",
                 "Your a/c XX1234 is debited on 09/01/2018 by INR 3,144.95 towards Purchase. Avl Bal : INR 123. For more details login to m.sc.com/in - StanChart",
                 new Date());
-        Double withdrawalAmount = sms.getWithdrawlAmount();
+        Double withdrawalAmount = sms.getWithdrawalAmount();
         assertEquals(new Double(3144.95), withdrawalAmount);
 
         sms = new Sms("AD-BANK",
                 "Tranx of INR 759.50 using Credit Card xxx1234 is made at VODAFONE-BILLDE on 10-JAN-18. Avbl Cr lmt:INR 63,488.50, Total Cr lmt: INR 70,000.00",
                 new Date());
-        withdrawalAmount = sms.getWithdrawlAmount();
+        withdrawalAmount = sms.getWithdrawalAmount();
         assertEquals(new Double(759.50),withdrawalAmount);
 
         sms = new Sms("AD-BANK",
                 "Dear Customer, Your a/c no. XXXXXXXX1234 is credited by Rs.20,000.00 on 11-Jan-2018 12:41:56 by a/c linked to mobile XXXXX61234. (IMPS Ref no 12345).",
                 new Date());
 
-        withdrawalAmount = sms.getWithdrawlAmount();
+        withdrawalAmount = sms.getWithdrawalAmount();
         assertNull(withdrawalAmount);
     }
 
@@ -59,25 +58,10 @@ public class SmsTest {
     public void shouldGetWithdrawnDate() throws Exception {
         Sms sms = new Sms("AD-BANK",
                 "Your a/c XX1234 is debited on 09/01/2018 by INR 3,144.95 towards Purchase. Avl Bal : INR 123. For more details login to m.sc.com/in - StanChart",
-                new Date());
+                new Date(1515436200000l));
         assertEquals(2018, sms.getTransactionYear().intValue());
         assertEquals(1, sms.getTransactionMonth().intValue());
         assertEquals(9, sms.getTransactionDay().intValue());
-
-        sms = new Sms("AD-BANK",
-                "Tranx of INR 759.50 using Credit Card xxx1234 is made at VODAFONE-BILLDE on 10-JAN-18. Avbl Cr lmt:INR 63,488.50, Total Cr lmt: INR 70,000.00",
-                new Date());
-        assertEquals(2018, sms.getTransactionYear().intValue());
-        assertEquals(1, sms.getTransactionMonth().intValue());
-        assertEquals(10, sms.getTransactionDay().intValue());
-
-        sms = new Sms("AD-BANK",
-                "Dear Customer, Your a/c no. XXXXXXXX1234 is credited by Rs.20,000.00 on 11-Dec-2017 12:41:56 by a/c linked to mobile XXXXX61234. (IMPS Ref no 12345).",
-                new Date());
-
-        assertEquals(2017, sms.getTransactionYear().intValue());
-        assertEquals(12, sms.getTransactionMonth().intValue());
-        assertEquals(11, sms.getTransactionDay().intValue());
     }
 
     @Test
@@ -100,34 +84,26 @@ public class SmsTest {
 
     @Test
     public void testPossibleCombinations() throws Exception {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Sms sms = new Sms("AD-BANK",
                 "Dear Customer, Your a/c no. XXXXXXXX6675 is debited for Rs.456 on 07-Feb-2018 09:26:27 and a/c XXXXXXXX4691 credited (IMPS Ref no 12345)",
                 new Date());
-        Double amount = sms.getWithdrawlAmount();
+        Double amount = sms.getWithdrawalAmount();
         assertEquals(new Double(456), amount);
-        assertEquals(2018, sms.getTransactionYear().intValue());
-        assertEquals(2, sms.getTransactionMonth().intValue());
-        assertEquals(7, sms.getTransactionDay().intValue());
 
 
         sms = new Sms("AD-BANK",
                 "Dear Customer, your Account XX6675 has been debited with INR 30,000.00 on 07-Feb-18. Info: MMT*Ref803809040238*30600100. The Available Balance is INR 1,23,456.53.",
                 new Date());
-        amount = sms.getWithdrawlAmount();
+        amount = sms.getWithdrawalAmount();
         assertEquals(new Double(30000), amount);
-        assertEquals(2018, sms.getTransactionYear().intValue());
-        assertEquals(2, sms.getTransactionMonth().intValue());
-        assertEquals(7, sms.getTransactionDay().intValue());
 
 
         sms = new Sms("AD-BANK",
                 "Ac XXXXXXXX0001234 Debited with Rs.15000.00,05-02-2018 13:57:45 thru IBS. Aval Bal Rs.1234.74 CR. Avail PNB Mobile banking. Visit https://mobile.netpnb.com",
                 new Date());
-        amount = sms.getWithdrawlAmount();
+        amount = sms.getWithdrawalAmount();
         assertEquals(new Double(15000), amount);
-        assertEquals(2018, sms.getTransactionYear().intValue());
-        assertEquals(2, sms.getTransactionMonth().intValue());
-        assertEquals(5, sms.getTransactionDay().intValue());
 
 
         sms = new Sms("AD-BANK",
@@ -135,9 +111,18 @@ public class SmsTest {
                 new Date());
         amount = sms.getCreditedAmount();
         assertEquals(new Double(2000), amount);
-        assertEquals(2018, sms.getTransactionYear().intValue());
-        assertEquals(2, sms.getTransactionMonth().intValue());
-        assertEquals(7, sms.getTransactionDay().intValue());
+
+        sms = new Sms("AD-BANK",
+                "Thank you for using your SBI Debit Card 123XXX for a purchase worth Rs829.92 on POS 123456 at SIVI SUPER MAR txn# 12121",
+                format.parse("2018-02-07"));
+        amount = sms.getWithdrawalAmount();
+        assertEquals(new Double(829.92), amount);
+
+        sms = new Sms("AD-BANK",
+                "INR 595 has been debited from your account XXX343 on 2017-12-04 for fund transfer to ABCD (Ref no. LT121212).",
+                format.parse("2018-02-07"));
+        amount = sms.getWithdrawalAmount();
+        assertEquals(new Double(595), amount);
 
     }
 }

@@ -22,7 +22,7 @@ public class SmsService {
         for(Sms sms : smsList) {
             if(isValidTransactionAlert(accountNames, sms)) {
                 Long accountId = this.getAccountId(sms.getAddress());
-                transactionAlerts.add(new TransactionAlert(accountId, sms.getBody(), sms.getWithdrawlAmount(),
+                transactionAlerts.add(new TransactionAlert(accountId, sms.getBody(), sms.getWithdrawalAmount(),
                         sms.getCreditedAmount(), sms.getTransactionMonth(),
                         sms.getTransactionYear(), sms.getTransactionDay()));
             }

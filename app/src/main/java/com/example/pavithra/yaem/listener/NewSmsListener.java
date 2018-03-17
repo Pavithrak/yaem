@@ -17,6 +17,7 @@ import com.example.pavithra.yaem.service.async.GetAccounts;
 import com.example.pavithra.yaem.service.async.AsyncTaskCallback;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class NewSmsListener extends BroadcastReceiver {
@@ -50,7 +51,7 @@ public class NewSmsListener extends BroadcastReceiver {
         for (SmsMessage smsMessage : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
             String address = smsMessage.getDisplayOriginatingAddress();
             String messageBody = smsMessage.getMessageBody();
-            smsList.add(new Sms(address, messageBody, null));
+            smsList.add(new Sms(address, messageBody, new Date(smsMessage.getTimestampMillis())));
         }
         return smsList;
     }
