@@ -11,14 +11,17 @@ import android.widget.TextView;
 import com.example.pavithra.yaem.AppDatabase;
 import com.example.pavithra.yaem.R;
 import com.example.pavithra.yaem.persistence.Account;
+import com.example.pavithra.yaem.service.async.DeleteAccount;
 
 import java.util.List;
 
 public class AccountsAdapter extends ArrayAdapter<Account> {
     AppDatabase appDatabase;
-    public AccountsAdapter(Context context, int resource, List<Account> items) {
+    DeleteAccount deleteAccount;
+    public AccountsAdapter(Context context, int resource, List<Account> items, DeleteAccount deleteAccount) {
         super(context, resource, items);
         appDatabase = AppDatabase.getInstance(getContext());
+        this.deleteAccount = deleteAccount;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class AccountsAdapter extends ArrayAdapter<Account> {
 
         @Override
         public void onClick(View v) {
-            appDatabase.accountDao().delete(account.getId());
+            deleteAccount.execute(account);
             remove(account);
             notifyDataSetChanged();
         }

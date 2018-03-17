@@ -11,7 +11,7 @@ import com.example.pavithra.yaem.persistence.TransactionAlert;
 import com.example.pavithra.yaem.persistence.Account;
 
 @Database(entities = {Account.class,  TransactionAlert.class
-}, version = 4, exportSchema = false)
+}, version = 6, exportSchema = false)
 public abstract  class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
     public abstract AccountDao accountDao();

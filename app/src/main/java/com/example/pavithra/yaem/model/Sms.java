@@ -100,7 +100,7 @@ public class Sms {
                 break;
             }
         }
-        return transDate;
+        return transDate == null ? this.date : transDate;
     }
 
     private Double getAmount(List<Pattern> patterns) {

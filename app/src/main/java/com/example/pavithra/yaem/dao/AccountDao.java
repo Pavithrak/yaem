@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface AccountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void add(Account account);
+    Long add(Account account);
 
     @Query("delete from Account where id = :id")
     void delete(long id);

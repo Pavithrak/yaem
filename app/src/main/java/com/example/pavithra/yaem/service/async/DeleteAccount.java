@@ -19,9 +19,9 @@ public class DeleteAccount extends AsyncTask<Account, Void, Account[]> {
     @Override
     protected void onPostExecute(Account[] accounts) {
         super.onPostExecute(accounts);
-        Toast toast = Toast.makeText(activity.getApplicationContext(), "Account addded", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(activity.getApplicationContext(), "Account deleted", Toast.LENGTH_LONG);
         toast.show();
-        activity.newAccountsAdded(accounts);
+//        activity.newAccountsAdded(accounts);
     }
 
     @Override

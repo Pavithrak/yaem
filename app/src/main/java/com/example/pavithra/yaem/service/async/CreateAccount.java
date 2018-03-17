@@ -27,7 +27,8 @@ public class CreateAccount extends AsyncTask<Account, Void, Account[]> {
     @Override
     protected Account[] doInBackground(Account... accounts) {
         for(Account account : accounts) {
-            appDatabase.accountDao().add(account);
+            Long id = appDatabase.accountDao().add(account);
+            account.setId(id);
         }
         return accounts;
     }
