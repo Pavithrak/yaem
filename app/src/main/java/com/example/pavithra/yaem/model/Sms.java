@@ -61,20 +61,20 @@ public class Sms {
 
     public Integer getTransactionMonth() {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(this.getTransactionDate());
+        calendar.setTime(this.date);
         return calendar.get(Calendar.MONTH) + 1;
     }
 
     public Integer getTransactionYear() {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(this.getTransactionDate());
+        calendar.setTime(this.date);
         int year = calendar.get(Calendar.YEAR);
         return year < 100 ? year + 2000 : year;
     }
 
     public Integer getTransactionDay() {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(this.getTransactionDate());
+        calendar.setTime(this.date);
         return calendar.get(Calendar.DATE);
     }
 
@@ -88,24 +88,10 @@ public class Sms {
                 "address='" + address + '\'' +
                 ", body='" + body + '\'' +
                 ", date=" + date + '\'' +
-                ", getTransactionDate=" + this.getTransactionDate() + '\'' +
+                ", getTransactionDate=" + this.date + '\'' +
                 ", getCredit =" + this.getCreditedAmount() + '\'' +
                 ", getDebit =" + this.getWithdrawalAmount() + '\'' +
                 '}';
-    }
-
-    private Date getTransactionDate() {
-//        Date transDate = null;
-//        for (Pattern pattern : this.dateRegex) {
-//            Matcher matcher = pattern.matcher(this.body);
-//            if (matcher.find()) {
-//                String date = matcher.group(1);
-//                transDate = convertStringToDate(date);
-//                break;
-//            }
-//        }
-//        return transDate == null ? this.date : transDate;
-        return this.date;
     }
 
     private Double getAmount(List<Pattern> patterns) {

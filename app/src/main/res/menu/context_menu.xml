@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_info"
+        android:orderInCategory="100"
+        android:title="Info"
+        android:icon="@android:drawable/ic_dialog_info"/>
+
+    <item
+        android:id="@+id/menu_ignore"
+        android:orderInCategory="100"
+        android:title="Ignore"
+        android:icon="@android:drawable/ic_delete"/>
+</menu>
