@@ -17,7 +17,7 @@ public class AccountService {
     public List<Account> addAccounts(List<Sms> sms) {
         List<String> accountNames = this.getAccountNames();
         for(Sms aSms : sms) {
-            if (aSms.isATransactionSms() && !accountNames.contains(aSms.getAddress())) {
+            if (aSms.isAValidSms() && !accountNames.contains(aSms.getAddress())) {
                 database.accountDao().add(new Account(aSms.getAddress()));
                 accountNames.add(aSms.getAddress());
             }

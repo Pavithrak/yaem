@@ -19,7 +19,7 @@ public class TransactionAlertService {
     public List<TransactionAlert> getFilteredTransactionAlerts() {
         List<TransactionAlert> transactionAlerts = new ArrayList<>();
         for(Sms sms : smsList) {
-            if(sms.isATransactionSms()) {
+            if(sms.isAValidSms()) {
                 Long accountId = this.getAccountId(sms.getAddress());
                 transactionAlerts.add(new TransactionAlert(accountId, sms.getBody(), sms.getWithdrawalAmount(),
                         sms.getCreditedAmount(), sms.getTransactionMonth(),

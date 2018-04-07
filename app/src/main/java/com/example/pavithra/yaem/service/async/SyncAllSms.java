@@ -43,7 +43,7 @@ public class SyncAllSms extends AsyncTask<Void, Void, List> {
         super.onPostExecute(list);
         for (Object obj : list) {
             Sms sms = (Sms) obj;
-            if (!sms.isATransactionSms()) {
+            if (!sms.isAValidSms()) {
                 System.out.println("This invalid sms is " + sms);
             }
         }

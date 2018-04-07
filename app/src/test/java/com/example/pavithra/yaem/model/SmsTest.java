@@ -83,6 +83,27 @@ public class SmsTest {
     }
 
     @Test
+    public void shouldTestValidityOfSms() throws Exception {
+        Sms sms = new Sms("AD-BANK",
+                "This is a random sms alert",
+                new Date());
+
+        assertFalse(sms.isAValidSms());
+
+        sms = new Sms("AD-BANK",
+                "Dear Customer, Your a/c no. XXXXXXXX1234 is OTP credited by Rs.20,000.00 on 11-Dec-2017 12:41:56 by a/c linked to mobile XXXXX61234. (IMPS Ref no 12345).",
+                new Date());
+
+        assertFalse(sms.isAValidSms());
+
+        sms = new Sms("AD-BANK",
+                "Dear Customer, Your a/c no. XXXXXXXX1234 is credited by Rs.20,000.00 on 11-Dec-2017 12:41:56 by a/c linked to mobile XXXXX61234. (IMPS Ref no 12345).",
+                new Date());
+
+        assertTrue(sms.isAValidSms());
+    }
+
+    @Test
     public void testPossibleCombinations() throws Exception {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Sms sms = new Sms("AD-BANK",

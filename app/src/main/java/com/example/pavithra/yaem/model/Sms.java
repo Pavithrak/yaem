@@ -21,6 +21,8 @@ public class Sms {
 
     private final Pattern creditIgnoreSMS = Pattern.compile("Credit Card", CASE_INSENSITIVE);
 
+    private final Pattern otpSMS = Pattern.compile("OTP", CASE_INSENSITIVE);
+
     private final List<Pattern> amountRegex = new ArrayList<Pattern>() {{
         add(Pattern.compile(".*?(INR\\s|Rs[^\\d]?)(\\d+,?\\d+\\.?\\d*)"));
     }};
@@ -125,5 +127,14 @@ public class Sms {
             value = null;
         }
         return value;
+    }
+
+    public boolean isAValidSms() {
+        return isATransactionSms() && isNotAOTPSms();
+    }
+
+    public boolean isNotAOTPSms() {
+        Matcher matcher = otpSMS.matcher(this.body);
+        return !matcher.find();
     }
 }
