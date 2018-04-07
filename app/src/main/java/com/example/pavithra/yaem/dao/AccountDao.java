@@ -23,4 +23,7 @@ public interface AccountDao {
 
     @Query("select * from Account")
     List<Account> getAccounts();
+
+    @Query("select name from Account")
+    List<String> getAccountNames();
 }

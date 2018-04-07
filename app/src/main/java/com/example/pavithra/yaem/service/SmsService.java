@@ -1,56 +1,33 @@
 package com.example.pavithra.yaem.service;
 
+import android.database.Cursor;
+import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
+
 import com.example.pavithra.yaem.model.Sms;
-import com.example.pavithra.yaem.persistence.Account;
-import com.example.pavithra.yaem.persistence.TransactionAlert;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SmsService {
-    private List<Sms> smsList;
-    private List<Account> accounts;
+    public static List<Sms> readExistingSms(AppCompatActivity activity) {
+        List<Sms> sms = new ArrayList();
+        String[] projection = new String[]{"_id", "address", "body", "date"};
+        Cursor cur = activity.getContentResolver().query(Uri.parse("content://sms/"), projection, null, null, "date desc");
+        if (cur.moveToFirst()) {
+            int index_Address = cur.getColumnIndex("address");
+            int index_Body = cur.getColumnIndex("body");
+            int index_Date = cur.getColumnIndex("date");
+            do {
+                sms.add(new Sms(cur.getString(index_Address), cur.getString(index_Body), new Date(cur.getLong(index_Date))));
 
-    public SmsService(List<Sms> smsList, List<Account> accounts) {
-        this.smsList = smsList;
-        this.accounts = accounts;
-    }
-
-    public List<TransactionAlert> getFilteredTransactionAlerts() {
-        List<TransactionAlert> transactionAlerts = new ArrayList<>();
-        List<String> accountNames = getAccountNames();
-        for(Sms sms : smsList) {
-            if(isValidTransactionAlert(accountNames, sms)) {
-                Long accountId = this.getAccountId(sms.getAddress());
-                transactionAlerts.add(new TransactionAlert(accountId, sms.getBody(), sms.getWithdrawalAmount(),
-                        sms.getCreditedAmount(), sms.getTransactionMonth(),
-                        sms.getTransactionYear(), sms.getTransactionDay()));
+            } while (cur.moveToNext());
+            if (!cur.isClosed()) {
+                cur.close();
+                cur = null;
             }
         }
-        return transactionAlerts;
+        return sms;
     }
-
-    private boolean isValidTransactionAlert(List<String> accountNames, Sms sms) {
-        return accountNames.contains(sms.getAddress()) && sms.isATransactionSms();
-    }
-
-    private List<String> getAccountNames() {
-        List<String> accountNames = new ArrayList<>();
-        for(Account account : this.accounts) {
-            accountNames.add(account.getName());
-        }
-        return accountNames;
-    }
-
-    private Long getAccountId(String name) {
-        Long accountId = null;
-        for(Account account : this.accounts) {
-            if (account.getName().equals(name)) {
-                accountId = account.getId();
-                break;
-            }
-        }
-        return accountId;
-    }
-
 }

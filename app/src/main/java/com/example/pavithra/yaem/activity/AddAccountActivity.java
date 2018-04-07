@@ -15,7 +15,7 @@ import com.example.pavithra.yaem.adapter.AccountsAdapter;
 import com.example.pavithra.yaem.persistence.Account;
 import com.example.pavithra.yaem.service.async.CreateAccount;
 import com.example.pavithra.yaem.service.async.DeleteAccount;
-import com.example.pavithra.yaem.service.async.SyncExistingSms;
+import com.example.pavithra.yaem.service.async.SyncNewAccountSms;
 
 import java.util.List;
 
@@ -59,8 +59,8 @@ public class AddAccountActivity extends AppCompatActivity {
 
 
     private void syncExistingSms(Account[] accounts) {
-        SyncExistingSms syncExistingSmsTask = new SyncExistingSms(this);
-        syncExistingSmsTask.execute(accounts);
+        SyncNewAccountSms syncNewAccountSmsTask = new SyncNewAccountSms(this);
+        syncNewAccountSmsTask.execute(accounts);
     }
 
     private class AccountsCallback implements Observer<List<Account>> {
