@@ -23,6 +23,8 @@ public class Sms {
 
     private final Pattern otpSMS = Pattern.compile("OTP", CASE_INSENSITIVE);
 
+    private final Pattern bankSMS = Pattern.compile("(\\s(\\d{2,})+X{2,})+\\s|\\s(X{2,})+(\\d{2,})+\\s|\\s(\\d{2,})+(X{2,})+(\\d{2,})+\\s", CASE_INSENSITIVE);
+
     private final List<Pattern> amountRegex = new ArrayList<Pattern>() {{
         add(Pattern.compile(".*?(INR\\s|Rs[^\\d]?)(\\d+,?\\d+\\.?\\d*)"));
     }};
@@ -130,11 +132,16 @@ public class Sms {
     }
 
     public boolean isAValidSms() {
-        return isATransactionSms() && isNotAOTPSms();
+        return isATransactionSms() && isABankSms() && isNotAOTPSms();
     }
 
-    public boolean isNotAOTPSms() {
+    private boolean isNotAOTPSms() {
         Matcher matcher = otpSMS.matcher(this.body);
         return !matcher.find();
+    }
+
+    private boolean isABankSms() {
+        Matcher matcher = bankSMS.matcher(this.body);
+        return matcher.find();
     }
 }

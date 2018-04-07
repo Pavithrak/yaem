@@ -101,6 +101,18 @@ public class SmsTest {
                 new Date());
 
         assertTrue(sms.isAValidSms());
+
+        sms = new Sms("AD-BANK",
+                "Your account 428xxxx1947 has been credited on 28/03/2018 by INR 123,456.00.Available Balance:INR 1,234,567.30 -StanChart",
+                new Date());
+
+        assertTrue(sms.isAValidSms());
+
+        sms = new Sms("AD-BANK",
+                "Get 25% instant discount with your StanChart debit and credit card at Swiggy. Min spends INR 500. Max discount INR 150. Offer valid every Saturday till 7 Apr 2018. Offer valid on max 2 transactions per card. For tnc, visit http://on.sc.com/2Dx89DK",
+                new Date());
+
+        assertFalse(sms.isAValidSms());
     }
 
     @Test
@@ -111,6 +123,7 @@ public class SmsTest {
                 new Date());
         Double amount = sms.getWithdrawalAmount();
         assertEquals(new Double(456), amount);
+        assertTrue(sms.isAValidSms());
 
 
         sms = new Sms("AD-BANK",
@@ -118,6 +131,7 @@ public class SmsTest {
                 new Date());
         amount = sms.getWithdrawalAmount();
         assertEquals(new Double(30000), amount);
+        assertTrue(sms.isAValidSms());
 
 
         sms = new Sms("AD-BANK",
@@ -125,6 +139,7 @@ public class SmsTest {
                 new Date());
         amount = sms.getWithdrawalAmount();
         assertEquals(new Double(15000), amount);
+        assertTrue(sms.isAValidSms());
 
 
         sms = new Sms("AD-BANK",
@@ -132,18 +147,20 @@ public class SmsTest {
                 new Date());
         amount = sms.getCreditedAmount();
         assertEquals(new Double(2000), amount);
+        assertTrue(sms.isAValidSms());
 
         sms = new Sms("AD-BANK",
                 "Thank you for using your SBI Debit Card 123XXX for a purchase worth Rs829.92 on POS 123456 at SIVI SUPER MAR txn# 12121",
                 format.parse("2018-02-07"));
         amount = sms.getWithdrawalAmount();
         assertEquals(new Double(829.92), amount);
+        assertTrue(sms.isAValidSms());
 
         sms = new Sms("AD-BANK",
                 "INR 595 has been debited from your account XXX343 on 2017-12-04 for fund transfer to ABCD (Ref no. LT121212).",
                 format.parse("2018-02-07"));
         amount = sms.getWithdrawalAmount();
         assertEquals(new Double(595), amount);
-
+        assertTrue(sms.isAValidSms());
     }
 }
